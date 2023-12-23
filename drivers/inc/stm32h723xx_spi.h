@@ -38,13 +38,13 @@ typedef struct {
 /**
  * Peripheral clock setup
  * */
-void SPI_peri_clock_control(SPI_RegDef_t *p_gpio_x, uint8_t en_state);
+void SPI_peri_clock_control(SPI_RegDef_t *p_SPI_x, uint8_t en_state);
 
 /**
  * Init and de-init
  * */
-void SPI_init(SPI_Handle_t *p_gpio_handle);
-void SPI_deinit(SPI_RegDef_t *p_gpio_x);
+void SPI_init(SPI_Handle_t *p_SPI_handle);
+void SPI_deinit(SPI_RegDef_t *p_SPI_x);
 
 /**
  * SPI function for sending data

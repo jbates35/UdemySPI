@@ -68,7 +68,7 @@ typedef struct NVIC_RegDef {
 #define LPTIM3_BASEADDR 0x58002800
 #define LPTIM2_BASEADDR 0x58002400
 #define I2C4_BASEADDR 0x58001C00
-#define SPI_I2S6_BASEADDR 0x58001400
+#define SPI_I2S_6_BASEADDR 0x58001400
 #define LPUART1_BASEADDR 0x58000C00
 #define SYSCFG_BASEADDR 0x58000400
 #define EXTI_BASEADDR 0x58000000
@@ -329,22 +329,22 @@ typedef struct EXTI_RegDef {
 } EXTI_RegDef_t;
 
 typedef struct {
-  __vo uint32_t CR1;              // SPI control register 1
-  __vo uint32_t CR2;              // SPI control register 2
-  __vo uint32_t CFG1;             // SPI configuration register 1
-  __vo uint32_t CFG2;             // SPI configuration register 2
-  __vo uint32_t IER;              // SPI interrupt enable register
-  __vo uint32_t SR;               // SPI status register
-  __vo uint32_t IFCR;             // SPI interrupt and status register
-  __vo uint32_t TXDR;             // SPI transmit data register
-  uint32_t RESERVED0[3];          // Reserved
-  __vo uint32_t RXDR;             // SPI receive data register
-  uint32_t RESERVED1[3];          // Reserved
-  __vo uint32_t CRCPOLY;          // SPI polynomial configuration register
-  __vo uint32_t TXCRC;            // SPI transmit CRC register
-  __vo uint32_t RXCRC;            // SPI receive CRC register
-  __vo uint32_t UDRDR;            // SPI underrun data register
-  __vo uint32_t SPI_I2SCFGR;      // SPI_I2S configuration register
+  __vo uint32_t CR1;         // SPI control register 1
+  __vo uint32_t CR2;         // SPI control register 2
+  __vo uint32_t CFG1;        // SPI configuration register 1
+  __vo uint32_t CFG2;        // SPI configuration register 2
+  __vo uint32_t IER;         // SPI interrupt enable register
+  __vo uint32_t SR;          // SPI status register
+  __vo uint32_t IFCR;        // SPI interrupt and status register
+  __vo uint32_t TXDR;        // SPI transmit data register
+  uint32_t RESERVED0[3];     // Reserved
+  __vo uint32_t RXDR;        // SPI receive data register
+  uint32_t RESERVED1[3];     // Reserved
+  __vo uint32_t CRCPOLY;     // SPI polynomial configuration register
+  __vo uint32_t TXCRC;       // SPI transmit CRC register
+  __vo uint32_t RXCRC;       // SPI receive CRC register
+  __vo uint32_t UDRDR;       // SPI underrun data register
+  __vo uint32_t SPI_I2SCFGR; // SPI_I2S configuration register
 
 } SPI_RegDef_t;
 //
@@ -405,11 +405,19 @@ typedef struct {
 #define SPI3_PCLK_EN() (RCC->APB1LENR |= (1 << 15))
 #define SPI4_PCLK_EN() (RCC->APB2ENR |= (1 << 13))
 #define SPI5_PCLK_EN() (RCC->APB2ENR |= (1 << 20))
+#define SPI6_PCLK_EN() (RCC->APB4ENR |= (1 << 5))
+
+#define SPI1_PCLK_DIS() (RCC->APB2ENR &= ~(1 << 12))
+#define SPI2_PCLK_DIS() (RCC->APB1LENR &= ~(1 << 14))
+#define SPI3_PCLK_DIS() (RCC->APB1LENR &= ~(1 << 15))
+#define SPI4_PCLK_DIS() (RCC->APB2ENR &= ~(1 << 13))
+#define SPI5_PCLK_DIS() (RCC->APB2ENR &= ~(1 << 20))
+#define SPI6_PCLK_DIS() (RCC->APB4ENR &= ~(1 << 13))
 
 #define SPI1 ((SPI_RegDef_t *)SPI1_I2S1_BASEADDR)
 #define SPI2 ((SPI_RegDef_t *)SPI2_I2S2_BASEADDR)
 #define SPI3 ((SPI_RegDef_t *)SPI3_I2S3_BASEADDR)
 #define SPI4 ((SPI_RegDef_t *)SPI4_BASEADDR)
 #define SPI5 ((SPI_RegDef_t *)SPI5_BASEADDR)
-
+#define SPI6 ((SPI_RegDef_t *)SPI_I2S_6_BASEADDR)
 #endif /* STM32H743ZG_PERIPHERALS_H_ */
