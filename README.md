@@ -1,0 +1,11 @@
+pins on stm32:
+
+| AD2| STM| Func|
+|----|----|----|
+|D0|PB4|SPI_B_MISO|
+|D1|PA4|SPI_B_NSS|
+|D2|PB3|SPI_B_CLK|
+|D3|PB5|SPI_B_MOSI|
+|D5|PG12|GPIO|
+|D6|PE9|TIMERA_PWM1|
+|D7|PE11|TIMERA_PWM2|
