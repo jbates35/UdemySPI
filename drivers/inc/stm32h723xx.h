@@ -329,22 +329,22 @@ typedef struct EXTI_RegDef {
 } EXTI_RegDef_t;
 
 typedef struct {
-  __vo uint32_t CR1;
-  __vo uint32_t CR2;
-  __vo uint32_t CFG1;
-  __vo uint32_t CFG2;
-  __vo uint32_t IER;
-  __vo uint32_t SR;
-  __vo uint32_t IFCR;
-  __vo uint32_t TXDR;
-  uint32_t RESERVED0[3];
-  __vo uint32_t RXDR;
-  uint32_t RESERVED1[3];
-  __vo uint32_t CRCPOLY;
-  __vo uint32_t TXCRC;
-  __vo uint32_t RXCRC;
-  __vo uint32_t UDRDR;
-  __vo uint32_t SPI_I2SCFGR;
+  __vo uint32_t CR1;              // SPI control register 1
+  __vo uint32_t CR2;              // SPI control register 2
+  __vo uint32_t CFG1;             // SPI configuration register 1
+  __vo uint32_t CFG2;             // SPI configuration register 2
+  __vo uint32_t IER;              // SPI interrupt enable register
+  __vo uint32_t SR;               // SPI status register
+  __vo uint32_t IFCR;             // SPI interrupt and status register
+  __vo uint32_t TXDR;             // SPI transmit data register
+  uint32_t RESERVED0[3];          // Reserved
+  __vo uint32_t RXDR;             // SPI receive data register
+  uint32_t RESERVED1[3];          // Reserved
+  __vo uint32_t CRCPOLY;          // SPI polynomial configuration register
+  __vo uint32_t TXCRC;            // SPI transmit CRC register
+  __vo uint32_t RXCRC;            // SPI receive CRC register
+  __vo uint32_t UDRDR;            // SPI underrun data register
+  __vo uint32_t SPI_I2SCFGR;      // SPI_I2S configuration register
 
 } SPI_RegDef_t;
 //

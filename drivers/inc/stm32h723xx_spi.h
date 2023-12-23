@@ -11,30 +11,52 @@
 
 #include "stm32h723xx.h"
 
+/**
+ * DeviceMode = SPI master, spi slave, etc.
+ * BusConfig = Full duplex, half duplex, simplex
+ * DFF - Data Frame Format (8bit data vs 16bit data)
+ * CPHA - clock phase
+ * CPOL - clock polarity
+ * SSM - slave select management, software vs hardware
+ * Speed - SPI clock speed based on divisors
+ * */
 typedef struct {
-  __vo uint32_t CR1;
-  __vo uint32_t CR2;
-  __vo uint32_t CFG1;
-  __vo uint32_t CFG2;
-  __vo uint32_t IER;
-  __vo uint32_t SR;
-  __vo uint32_t IFCR;
-  __vo uint32_t TXDR;
-  uint32_t RESERVED0[3];
-  __vo uint32_t RXDR;
-  uint32_t RESERVED1[3];
-  __vo uint32_t CRCPOLY;
-  __vo uint32_t TXCRC;
-  __vo uint32_t RXCRC;
-  __vo uint32_t UDRDR;
-  __vo uint32_t SPI_I2SCFGR;
-
+  uint8_t device_mode;
+  uint8_t bus_config;
+  uint8_t dff;
+  uint8_t cpha;
+  uint8_t cpol;
+  uint8_t ssm;
+  uint8_t speed;
 } SPI_Config_t;
 
 typedef struct {
-  GPIO_RegDef_t *
-      p_GPIO_x; // Holds the base address of the GPIO port which the pin belongs
-  GPIO_PinConfig_t GPIO_pin_config; // Holds the GPIO pin configuration settings
-} GPIO_Handle_t;
+  SPI_RegDef_t *p_SPI_x;
+  SPI_Config_t SPI_config;
+} SPI_Handle_t;
 
+/**
+ * Peripheral clock setup
+ * */
+void SPI_peri_clock_control(SPI_RegDef_t *p_gpio_x, uint8_t en_state);
+
+/**
+ * Init and de-init
+ * */
+void SPI_init(SPI_Handle_t *p_gpio_handle);
+void SPI_deinit(SPI_RegDef_t *p_gpio_x);
+
+/**
+ * SPI function for sending data
+ * */
+void SPI_send(SPI_RegDef_t *p_SPI_x, uint8_t *p_tx_buffer, uint32_t len);
+
+/**
+ * SPI function for receiving data
+ **/
+void SPI_receive(SPI_RegDef_t *p_SPI_x, uint8_t *p_rx_buffer, uint32_t len);
+
+/**
+ * IRQ Configuration and ISR handling
+ * */
 #endif
