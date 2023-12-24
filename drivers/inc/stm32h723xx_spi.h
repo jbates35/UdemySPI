@@ -35,6 +35,42 @@ typedef struct {
   SPI_Config_t SPI_config;
 } SPI_Handle_t;
 
+/** Enums used in SPI configuration **/
+typedef enum { SPI_MASTER = 0, SPI_SLAVE } SPI_DEVICE_MODE;
+
+typedef enum {
+  SPI_FULL_DUPLEX = 0,
+  SPI_HALF_DUPLEX,
+  SPI_SIMPLEX
+} SPI_BUS_CONFIG;
+
+typedef enum { SPI_8_BIT = 0, SPI_16_BIT } SPI_DATA_SIZE;
+
+typedef enum {
+  SPI_CAPTURE_RISING_EDGE = 0,
+  SPI_CAPTURE_FALLING_EDGE
+} SPI_CLOCK_PHASE;
+
+typedef enum {
+  SPI_CAPTURE_ACTIVE_HIGH = 0,
+  SPI_CAPTURE_ACTIVE_LOW
+} SPI_CLOCK_POLARITY;
+
+typedef enum { SPI_SSM_DISABLE = 0, SPI_SSM_ENABLE } SPI_SS_OUTPUT_ENABLE;
+
+typedef enum { SPI_SSM_SS_PAD = 0, SPI_SSM_SS_BIT } SPI_SS_MANAGEMENT;
+
+typedef enum {
+  SPI_BAUD_RATE_2 = 0,
+  SPI_BAUD_RATE_4,
+  SPI_BAUD_RATE_8,
+  SPI_BAUD_RATE_16,
+  SPI_BAUD_RATE_32,
+  SPI_BAUD_RATE_64,
+  SPI_BAUD_RATE_128,
+  SPI_BAUD_RATE_256
+} SPI_BAUD_RATE;
+
 /**
  * Peripheral clock setup
  * */

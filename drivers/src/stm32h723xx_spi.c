@@ -33,7 +33,17 @@ void SPI_peri_clock_control(SPI_RegDef_t *p_SPI_x, uint8_t en_state) {
 /**
  * Init and de-init
  * */
-void SPI_init(SPI_Handle_t *p_SPI_handle);
+void SPI_init(SPI_Handle_t *p_SPI_handle) {
+  if (p_SPI_handle == NULL)
+    return;
+
+  SPI_Config_t *cfg = &(p_SPI_handle->SPI_config);
+
+  if (cfg->device_mode == 1) {
+    //
+  }
+}
+
 void SPI_deinit(SPI_RegDef_t *p_SPI_x);
 
 /**
