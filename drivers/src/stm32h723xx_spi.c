@@ -44,11 +44,24 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
   // First set IOLOCK bit to modify register
   (*spi_reg)->CR1 &= ~((1 << 16) + (1 << 0));
 
-  // Set master or slave
-  if (cfg->device_mode == (int)SPI_MASTER)
-    (*spi_reg)->CFG2 |= (1 << 22);
-  else
-    (*spi_reg)->CFG2 &= ~(1 << 22);
+  // Might want to reset the entre SPI bus here
+
+  (*spi_reg)->CFG2 = cfg->device_mode << 22;
+  (*spi_reg)->CFG2 |= cfg->bus_config << 17;
+  (*spi_reg)->CFG2 |= cfg->cpha << 24;
+  (*spi_reg)->CFG2 |= cfg->cpol << 25;
+
+  // Not sure I need the outer if statement. Only allows for SSM when in master
+  // mode.
+  if (cfg->device_mode == SPI_MASTER) {
+    if (cfg->ssm == SPI_SSM_ENABLE)
+      (*spi_reg)->CFG2 |= (1 << 26);
+    else
+      (*spi_reg)->CFG2 |= (0 << 26) + (1 << 29);
+  }
+
+  (*spi_reg)->CFG1 = (cfg->speed << 28);
+  (*spi_reg)->CFG1 |= (cfg->dff << 0);
 }
 
 void SPI_deinit(SPI_RegDef_t *p_SPI_x);
