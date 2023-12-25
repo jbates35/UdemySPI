@@ -62,6 +62,9 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
 
   (*spi_reg)->CFG1 = (cfg->speed << 28);
   (*spi_reg)->CFG1 |= (cfg->dff << 0);
+
+  // Lock the SPI registers so SPI is ready for use
+  (*spi_reg)->CR1 |= (1 << 16) + (1 << 0);
 }
 
 void SPI_deinit(SPI_RegDef_t *p_SPI_x);
