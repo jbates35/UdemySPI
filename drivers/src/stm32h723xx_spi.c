@@ -1,4 +1,5 @@
 #include "stm32h723xx_spi.h"
+#include "stm32h723xx.h"
 
 #include <stdio.h>
 
@@ -38,10 +39,16 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
     return;
 
   SPI_Config_t *cfg = &(p_SPI_handle->SPI_config);
+  SPI_RegDef_t **spi_reg = &(p_SPI_handle->p_SPI_x);
 
-  if (cfg->device_mode == 1) {
-    //
-  }
+  // First set IOLOCK bit to modify register
+  (*spi_reg)->CR1 &= ~((1 << 16) + (1 << 0));
+
+  // Set master or slave
+  if (cfg->device_mode == (int)SPI_MASTER)
+    (*spi_reg)->CFG2 |= (1 << 22);
+  else
+    (*spi_reg)->CFG2 &= ~(1 << 22);
 }
 
 void SPI_deinit(SPI_RegDef_t *p_SPI_x);

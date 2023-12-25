@@ -36,12 +36,13 @@ typedef struct {
 } SPI_Handle_t;
 
 /** Enums used in SPI configuration **/
-typedef enum { SPI_MASTER = 0, SPI_SLAVE } SPI_DEVICE_MODE;
+typedef enum { SPI_SLAVE = 0, SPI_MASTER } SPI_DEVICE_MODE;
 
 typedef enum {
   SPI_FULL_DUPLEX = 0,
   SPI_HALF_DUPLEX,
-  SPI_SIMPLEX
+  SPI_SIMPLEX_RX_ONLY,
+  SPI_SIMPLEX_TX_ONLY
 } SPI_BUS_CONFIG;
 
 typedef enum { SPI_8_BIT = 0, SPI_16_BIT } SPI_DATA_SIZE;
