@@ -414,6 +414,37 @@ typedef struct {
 #define SPI5_PCLK_DIS() (RCC->APB2ENR &= ~(1 << 20))
 #define SPI6_PCLK_DIS() (RCC->APB4ENR &= ~(1 << 13))
 
+#define SPI1_RESET()                                                           \
+  do {                                                                         \
+    (RCC->APB2RSTR |= (1 << 12));                                              \
+    (RCC->APB2RSTR &= ~(1 << 12));                                             \
+  } while (0)
+#define SPI2_RESET()                                                           \
+  do {                                                                         \
+    (RCC->APB1LRSTR |= (1 << 14));                                             \
+    (RCC->APB1LRSTR &= ~(1 << 14));                                            \
+  } while (0)
+#define SPI3_RESET()                                                           \
+  do {                                                                         \
+    (RCC->APB1LRSTR |= (1 << 15));                                             \
+    (RCC->APB1LRSTR &= ~(1 << 15));                                            \
+  } while (0)
+#define SPI4_RESET()                                                           \
+  do {                                                                         \
+    (RCC->APB2RSTR |= (1 << 13));                                              \
+    (RCC->APB2RSTR &= ~(1 << 13));                                             \
+  } while (0)
+#define SPI5_RESET()                                                           \
+  do {                                                                         \
+    (RCC->APB2RSTR |= (1 << 20));                                              \
+    (RCC->APB2RSTR &= ~(1 << 20));                                             \
+  } while (0)
+#define SPI6_RESET()                                                           \
+  do {                                                                         \
+    (RCC->APB4RSTR |= (1 << 13));                                              \
+    (RCC->APB4RSTR &= ~(1 << 13));                                             \
+  } while (0)
+
 #define SPI1 ((SPI_RegDef_t *)SPI1_I2S1_BASEADDR)
 #define SPI2 ((SPI_RegDef_t *)SPI2_I2S2_BASEADDR)
 #define SPI3 ((SPI_RegDef_t *)SPI3_I2S3_BASEADDR)
@@ -433,7 +464,7 @@ typedef enum {
   SPI_CR1_CRC33_17,
   SPI_CR1_RCRCINI,
   SPI_CR1_TCRCINI,
-  SPI_CRA_IOLOCK
+  SPI_CR1_IOLOCK
 } SPI_CR1_BIT;
 
 // SPI_CR2

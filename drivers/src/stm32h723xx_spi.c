@@ -42,29 +42,48 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
   SPI_RegDef_t **spi_reg = &(p_SPI_handle->p_SPI_x);
 
   // First set IOLOCK bit to modify register
-  (*spi_reg)->CR1 &= ~((1 << 16) + (1 << 0));
+  (*spi_reg)->CR1 &= ~((1 << SPI_CR1_IOLOCK) + (1 << SPI_CR1_SPE));
 
-  // Might want to reset the entre SPI bus here
+  // Reset the SPI peripheral before configuring
+  static SPI_RegDef_t *const SPIx_BASE_ADDRS[6] = {SPI1, SPI2, SPI3,
+                                                   SPI4, SPI5, SPI6};
 
-  (*spi_reg)->CFG2 = cfg->device_mode << 22;
-  (*spi_reg)->CFG2 |= cfg->bus_config << 17;
-  (*spi_reg)->CFG2 |= cfg->cpha << 24;
-  (*spi_reg)->CFG2 |= cfg->cpol << 25;
+  static uint8_t const SPIx_EN_BIT_POS[6] = {12, 14, 15, 13, 20, 5};
+
+  uint32_t SPIx_RCC_REG[6] = {RCC->APB2RSTR, RCC->APB1LRSTR, RCC->APB1LRSTR,
+                              RCC->APB2RSTR, RCC->APB2RSTR,  RCC->APB4RSTR};
+
+  for (int i = 0; i < sizeof(SPIx_BASE_ADDRS) / sizeof(SPI_RegDef_t *); i++) {
+    if (*spi_reg != SPIx_BASE_ADDRS[i])
+      continue;
+
+    SPIx_RCC_REG[i] |= (1 << SPIx_EN_BIT_POS[i]);
+    SPIx_RCC_REG[i] &= ~(1 << SPIx_EN_BIT_POS[i]);
+
+    break;
+  }
+
+  // Set parameters given to us from the config struct
+  (*spi_reg)->CFG2 = cfg->device_mode << SPI_CFG2_MASTER;
+  (*spi_reg)->CFG2 |= cfg->bus_config << SPI_CFG2_COMM;
+  (*spi_reg)->CFG2 |= cfg->cpha << SPI_CFG2_CPHA;
+  (*spi_reg)->CFG2 |= cfg->cpol << SPI_CFG2_CPOL;
 
   // Not sure I need the outer if statement. Only allows for SSM when in master
   // mode.
   if (cfg->device_mode == SPI_MASTER) {
     if (cfg->ssm == SPI_SSM_ENABLE)
-      (*spi_reg)->CFG2 |= (1 << 26);
+      (*spi_reg)->CFG2 |= (1 << SPI_CFG2_SSM);
     else
-      (*spi_reg)->CFG2 |= (0 << 26) + (1 << 29);
+      (*spi_reg)->CFG2 |= (0 << SPI_CFG2_SSM) + (1 << SPI_CFG2_SSOE);
   }
 
-  (*spi_reg)->CFG1 = (cfg->speed << 28);
-  (*spi_reg)->CFG1 |= (cfg->dff << 0);
+  // Set the baud rate and data frame size
+  (*spi_reg)->CFG1 = (cfg->speed << SPI_CFG1_MBR);
+  (*spi_reg)->CFG1 |= (cfg->dff << SPI_CFG1_DSIZE);
 
   // Lock the SPI registers so SPI is ready for use
-  (*spi_reg)->CR1 |= (1 << 16) + (1 << 0);
+  (*spi_reg)->CR1 |= (1 << SPI_CR1_IOLOCK) + (1 << SPI_CR1_SPE);
 }
 
 void SPI_deinit(SPI_RegDef_t *p_SPI_x);
