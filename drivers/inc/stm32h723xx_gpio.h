@@ -10,6 +10,15 @@
 
 #include "stm32h723xx.h"
 
+/**
+ * GPIO pin configuration structure
+ * @GPIO_pin_number: the pin associated with the particular port (i.e. 5 if PE5)
+ * @GPIO_pin_mode: the mode of the pin (i.e. input, output, etc.)
+ * @GPIO_pin_speed: the speed of the pin (i.e. low, medium, high, etc.)
+ * @GPIO_pin_pupd_control: the pull up/pull down configuration of the pin
+ * @GPIO_pin_out_type: the output type of the pin (i.e. push-pull or open drain)
+ * @GPIO_pin_alt_func_mode: the alternate function mode of the pin
+ */
 typedef struct {
   uint8_t GPIO_pin_number;
   uint8_t GPIO_pin_mode;
@@ -28,35 +37,42 @@ typedef struct {
 /*
  * GPIO pin possible modes
  */
-#define GPIO_MODE_IN 0
-#define GPIO_MODE_OUT 1
-#define GPIO_MODE_ALTFN 2
-#define GPIO_MODE_ANALOG 3
-#define GPIO_MODE_IT_FT 4
-#define GPIO_MODE_IT_RT 5
-#define GPIO_MODE_IT_RFT 6
+typedef enum {
+  GPIO_MODE_IN = 0,
+  GPIO_MODE_OUT = 1,
+  GPIO_MODE_ALTFN = 2,
+  GPIO_MODE_ANALOG = 3,
+  GPIO_MODE_IT_FT = 4,
+  GPIO_MODE_IT_RT = 5,
+  GPIO_MODE_IT_RFT = 6
+} GPIO_MODE_BIT;
 
 /*
  * GPIO pin possible output types
  */
-#define GPIO_OP_TYPE_PP 0
-#define GPIO_OP_TYPE_OD 1
+typedef enum {
+  GPIO_OP_TYPE_PUSHPULL = 0,
+  GPIO_OP_TYPE_OPENDRAIN = 1
+} GPIO_OP_TYPE_BIT;
 
 /*
  * GPIO pin possible output speeds
  */
-#define GPIO_SPEED_LOW 0
-#define GPIO_SPEED_MEDIUM 1
-#define GPIO_SPEED_FAST 2
-#define GPIO_SPEED_HIGH 3
+typedef enum {
+  GPIO_SPEED_LOW = 0,
+  GPIO_SPEED_MEDIUM = 1,
+  GPIO_SPEED_FAST = 2,
+  GPIO_SPEED_HIGH = 3
+} GPIO_SPEED_BIT;
 
 /*
  * GPIO pin pull up and pull down configuration macros
- */
-#define GPIO_PUPDR_NONE 0
-#define GPIO_PUPDR_PU 1
-#define GPIO_PUPDR_PD 2
-
+*/
+typedef enum {
+  GPIO_PUPDR_NONE = 0,
+  GPIO_PUPDR_PULLUP = 1,
+  GPIO_PUPDR_PULLDOWN = 2
+} GPIO_PUPDR_BIT;
 /*
  * Peripheral clock setup
  */

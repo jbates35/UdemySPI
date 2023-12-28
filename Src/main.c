@@ -31,6 +31,7 @@
 
 #include "stm32h723xx.h"
 #include "stm32h723xx_gpio.h"
+#include "stm32h723xx_spi.h"
 
 #if !defined(__SOFT_FP__) && defined(__ARM_FP)
 #warning                                                                       \
@@ -50,19 +51,45 @@ int main(void) {
 void program_init(void) {
   // User button PC13
   // LED is on PB0
+  GPIO_peri_clock_control(GPIOA, ENABLE);
+  GPIO_peri_clock_control(GPIOB, ENABLE);
   GPIO_peri_clock_control(GPIOC, ENABLE);
   GPIO_peri_clock_control(GPIOE, ENABLE);
 
+  // Create GPIO handler and assign shortcuts for easier access
   GPIO_Handle_t gpio_handle;
   GPIO_RegDef_t **addr = &gpio_handle.p_GPIO_x;
   GPIO_PinConfig_t *cfg = &gpio_handle.GPIO_pin_config;
+
+  *addr = GPIOA;
+  // PA4 - SPI_1_NSS
+  cfg->GPIO_pin_number = 4;
+  cfg->GPIO_pin_mode = GPIO_MODE_ALTFN;
+  cfg->GPIO_pin_speed = GPIO_SPEED_FAST;
+  cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
+  cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
+  cfg->GPIO_pin_alt_func_mode = 5;
+  GPIO_init(&gpio_handle);
+
+  *addr = GPIOB;
+  // PB4 - SPI_1_MISO
+  cfg->GPIO_pin_number = 4;
+  GPIO_init(&gpio_handle);
+
+  // PB5 - SPI_1_MOSI
+  cfg->GPIO_pin_number = 5;
+  GPIO_init(&gpio_handle);
+
+  // PB3 - SPI_1_SCK
+  cfg->GPIO_pin_number = 3;
+  GPIO_init(&gpio_handle);
 
   // User button PC13
   *addr = GPIOC;
   cfg->GPIO_pin_number = 13;
   cfg->GPIO_pin_mode = GPIO_MODE_IT_FT;
   cfg->GPIO_pin_speed = GPIO_SPEED_LOW;
-  cfg->GPIO_pin_pupd_control = GPIO_PUPDR_PD;
+  cfg->GPIO_pin_pupd_control = GPIO_PUPDR_PULLDOWN;
   cfg->GPIO_pin_out_type = 0;
   cfg->GPIO_pin_alt_func_mode = 0;
   GPIO_init(&gpio_handle);
@@ -75,7 +102,7 @@ void program_init(void) {
   cfg->GPIO_pin_mode = GPIO_MODE_OUT;
   cfg->GPIO_pin_speed = GPIO_SPEED_LOW;
   cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
-  cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PP;
+  cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
   cfg->GPIO_pin_alt_func_mode = 0;
   GPIO_init(&gpio_handle);
 

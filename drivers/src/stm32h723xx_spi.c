@@ -145,7 +145,7 @@ void SPI_send(SPI_RegDef_t *p_SPI_x, uint8_t *p_tx_buffer, uint32_t len) {
     while (!(p_SPI_x->SR & SPI_SR_TXP))
       ;
 
-    int bit_count = (p_SPI_x->CFG1 & (0x1F << SPI_CFG1_DSIZE) - 1) / 8 + 1;
+    int bit_count = ((p_SPI_x->CFG1 & (0x1F << SPI_CFG1_DSIZE)) - 1) / 8 + 1;
 
     uint32_t tx_word = 0;
 
