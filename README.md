@@ -1,5 +1,18 @@
 pins on stm32:
 
+new:
+| AD2| STM| Func|
+|----|----|----|
+|D0|PE5|SPI_4_MISO|
+|D1|PE4|SPI_4_NSS|
+|D2|PE2|SPI_4_CLK|
+|D3|PE6|SPI_4_MOSI|
+|D5|PG12|GPIO|
+|D6|PE9|TIMERA_PWM1|
+|D7|PE11|TIMERA_PWM2|
+
+old:
+
 | AD2| STM| Func|
 |----|----|----|
 |D0|PB4|SPI_B_MISO|
@@ -9,3 +22,5 @@ pins on stm32:
 |D5|PG12|GPIO|
 |D6|PE9|TIMERA_PWM1|
 |D7|PE11|TIMERA_PWM2|
+
+
