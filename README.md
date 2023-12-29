@@ -1,8 +1,8 @@
 pins on stm32:
 
 new:
-| AD2| STM| Func| Pin |
-|----|----|----|
+| AD2| STM| Func| Pin|
+|----|----|----|----|
 |D0|PE5|SPI_4_MISO|CN9-18|
 |D1|PE4|SPI_4_NSS|CN9-16|
 |D2|PE2|SPI_4_CLK|CN9-14|
