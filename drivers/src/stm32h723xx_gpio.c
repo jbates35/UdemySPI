@@ -104,7 +104,7 @@ void GPIO_init(GPIO_Handle_t *p_GPIO_handle) {
 
   // Set output speed - clear bits to 00 and then set
   gpiox->OSPEEDR &= ~(0x3 << dshift);
-  gpiox->OSPEEDR = cfg->GPIO_pin_speed << dshift;
+  gpiox->OSPEEDR |= cfg->GPIO_pin_speed << dshift;
 
   // Set output type - clear bits to 0 first and then set
   gpiox->OTYPER &= ~(0x1 << sshift);
@@ -229,8 +229,6 @@ void GPIO_irq_interrupt_config(uint8_t irq_number, uint8_t en_state) {
     NVIC->ISER[irq_number / 32] |= (1 << (irq_number % 32));
   else
     NVIC->ICER[irq_number / 32] |= (1 << (irq_number % 32));
-
-  int delme = 0;
 }
 
 /**
