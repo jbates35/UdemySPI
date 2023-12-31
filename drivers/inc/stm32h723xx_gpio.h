@@ -61,13 +61,13 @@ typedef enum {
 typedef enum {
   GPIO_SPEED_LOW = 0,
   GPIO_SPEED_MEDIUM = 1,
-  GPIO_SPEED_FAST = 2,
-  GPIO_SPEED_HIGH = 3
+  GPIO_SPEED_HIGH = 2,
+  GPIO_SPEED_VERY_HIGH = 3
 } GPIO_SPEED_BIT;
 
 /*
  * GPIO pin pull up and pull down configuration macros
-*/
+ */
 typedef enum {
   GPIO_PUPDR_NONE = 0,
   GPIO_PUPDR_PULLUP = 1,

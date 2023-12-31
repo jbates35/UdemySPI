@@ -26,8 +26,7 @@
   } while (0)
 
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 
 #include "stm32h723xx.h"
 #include "stm32h723xx_gpio.h"
@@ -43,9 +42,14 @@ void program_init(void);
 int main(void) {
   program_init();
 
+  char user_data[] = "Hello world";
+  int len = strlen(user_data);
+
   /* Loop forever */
-  for (;;)
-    ;
+  for (;;) {
+    //    SPI_send(SPI1, (uint8_t *)user_data, len);
+    //    WAIT(SLOW);
+  }
 }
 
 void program_init(void) {
@@ -55,6 +59,9 @@ void program_init(void) {
   GPIO_peri_clock_control(GPIOB, ENABLE);
   GPIO_peri_clock_control(GPIOC, ENABLE);
   GPIO_peri_clock_control(GPIOE, ENABLE);
+  SPI_peri_clock_control(SPI1, ENABLE);
+
+  SYSCFG_PCLK_EN();
 
   // Create GPIO handler and assign shortcuts for easier access
   GPIO_Handle_t gpio_handle;
@@ -62,26 +69,25 @@ void program_init(void) {
   GPIO_PinConfig_t *cfg = &gpio_handle.GPIO_pin_config;
 
   *addr = GPIOA;
-  // PA4 - SPI_1_NSS
+  // PE4 - SPI_4_NSS
   cfg->GPIO_pin_number = 4;
   cfg->GPIO_pin_mode = GPIO_MODE_ALTFN;
-  cfg->GPIO_pin_speed = GPIO_SPEED_FAST;
+  cfg->GPIO_pin_speed = GPIO_SPEED_HIGH;
   cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
-  cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
+  cfg->GPIO_pin_out_type = GPIO_OP_TYPE_OPENDRAIN;
   cfg->GPIO_pin_alt_func_mode = 5;
   GPIO_init(&gpio_handle);
 
-  *addr = GPIOB;
-  // PB4 - SPI_1_MISO
-  cfg->GPIO_pin_number = 4;
-  GPIO_init(&gpio_handle);
-
-  // PB5 - SPI_1_MOSI
+  // PE5 - SPI_4_MISO
   cfg->GPIO_pin_number = 5;
   GPIO_init(&gpio_handle);
 
-  // PB3 - SPI_1_SCK
-  cfg->GPIO_pin_number = 3;
+  // PE6 - SPI_4_MOSI
+  cfg->GPIO_pin_number = 6;
+  GPIO_init(&gpio_handle);
+
+  // PE2 - SPI_4_SCK
+  cfg->GPIO_pin_number = 2;
   GPIO_init(&gpio_handle);
 
   // User button PC13
@@ -105,11 +111,23 @@ void program_init(void) {
   cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
   cfg->GPIO_pin_alt_func_mode = 0;
   GPIO_init(&gpio_handle);
+  /*
+    // Config spi
+    SPI_Handle_t spi_handle;
+    SPI_Config_t *spi_cfg = &spi_handle.SPI_config;
+    SPI_RegDef_t **spi_reg = &spi_handle.p_SPI_x;
 
-  // Need to check syscfg -> exticr
-  // Need to check EXTI -> FTSR1 and RTSR1 and CPUIMR1
-  // Need to check gpioc -> MODER
-  // Need to check NVIC ISER and ICER and IPR
+    *spi_reg = SPI1;
+    spi_cfg->device_mode = SPI_DEVICE_MODE_MASTER;
+    spi_cfg->bus_config = SPI_BUS_CONFIG_HALF_DUPLEX;
+    spi_cfg->cpol = SPI_CPOL_CAPTURE_ACTIVE_HIGH;
+    spi_cfg->cpha = SPI_CPHA_CAPTURE_SECOND_EDGE;
+    spi_cfg->ssm = SPI_SSM_ENABLE;
+    spi_cfg->baud_divisor = SPI_BAUD_DIVISOR_8;
+    spi_cfg->dff = SPI_DFF_16_BIT;
+    SPI_init(&spi_handle);
+  */
+  int asdf2 = 0;
 }
 
 void EXTI15_10_IRQHandler(void) {

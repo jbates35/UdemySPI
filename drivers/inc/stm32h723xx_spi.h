@@ -11,6 +11,49 @@
 
 #include "stm32h723xx.h"
 
+/** Enums used in SPI configuration **/
+typedef enum SPI_DEVICE_MODE {
+  SPI_DEVICE_MODE_SLAVE = 0,
+  SPI_DEVICE_MODE_MASTER
+} SPI_DEVICE_MODE;
+
+typedef enum SPI_BUS_CONFIG {
+  SPI_BUS_CONFIG_FULL_DUPLEX = 0,
+  SPI_BUS_CONFIG_SIMPLEX_TX_ONLY,
+  SPI_BUS_CONFIG_SIMPLEX_RX_ONLY,
+  SPI_BUS_CONFIG_HALF_DUPLEX
+} SPI_BUS_CONFIG;
+
+typedef enum SPI_DFF {
+  SPI_DFF_8_BIT = 8,
+  SPI_DFF_16_BIT = 16,
+  SPI_DFF_24_BIT = 24,
+  SPI_DFF_32_BIT = 32
+} SPI_DFF;
+
+typedef enum SPI_CPHA {
+  SPI_CPHA_CAPTURE_FIRST_EDGE = 0,
+  SPI_CPHA_CAPTURE_SECOND_EDGE
+} SPI_CPHA;
+
+typedef enum SPI_CPOL {
+  SPI_CPOL_CAPTURE_ACTIVE_HIGH = 0,
+  SPI_CPOL_CAPTURE_ACTIVE_LOW
+} SPI_CPOL;
+
+typedef enum SPI_SSM { SPI_SSM_DISABLE = 0, SPI_SSM_ENABLE } SPI_SSM;
+
+typedef enum SPI_BAUD_DIVISOR {
+  SPI_BAUD_DIVISOR_2 = 0,
+  SPI_BAUD_DIVISOR_4,
+  SPI_BAUD_DIVISOR_8,
+  SPI_BAUD_DIVISOR_16,
+  SPI_BAUD_DIVISOR_32,
+  SPI_BAUD_DIVISOR_64,
+  SPI_BAUD_DIVISOR_128,
+  SPI_BAUD_DIVISOR_256
+} SPI_BAUD_DIVISOR;
+
 /**
  * DeviceMode = SPI master, spi slave, etc.
  * BusConfig = Full duplex, half duplex, simplex
@@ -20,49 +63,20 @@
  * SSM - slave select management, software vs hardware
  * Speed - SPI clock speed based on divisors
  * */
-typedef struct {
-  uint8_t device_mode;
-  uint8_t bus_config;
-  uint8_t dff;
-  uint8_t cpha;
-  uint8_t cpol;
-  uint8_t ssm;
-  uint8_t speed;
+typedef struct SPI_Config {
+  SPI_DEVICE_MODE device_mode;
+  SPI_BUS_CONFIG bus_config;
+  SPI_DFF dff;
+  SPI_CPHA cpha;
+  SPI_CPOL cpol;
+  SPI_SSM ssm;
+  SPI_BAUD_DIVISOR baud_divisor;
 } SPI_Config_t;
 
-typedef struct {
+typedef struct SPI_Handle {
   SPI_RegDef_t *p_SPI_x;
   SPI_Config_t SPI_config;
 } SPI_Handle_t;
-
-/** Enums used in SPI configuration **/
-typedef enum { SPI_SLAVE = 0, SPI_MASTER } SPI_DEVICE_MODE;
-
-typedef enum {
-  SPI_FULL_DUPLEX = 0,
-  SPI_SIMPLEX_TX_ONLY,
-  SPI_SIMPLEX_RX_ONLY,
-  SPI_HALF_DUPLEX
-} SPI_BUS_CONFIG;
-
-typedef enum { SPI_8_BIT = 0, SPI_16_BIT } SPI_DFF;
-
-typedef enum { SPI_CAPTURE_FIRST_EDGE = 0, SPI_CAPTURE_SECOND_EDGE } SPI_CPHA;
-
-typedef enum { SPI_CAPTURE_ACTIVE_HIGH = 0, SPI_CAPTURE_ACTIVE_LOW } SPI_CPOL;
-
-typedef enum { SPI_SSM_DISABLE = 0, SPI_SSM_ENABLE } SPI_SSM;
-
-typedef enum {
-  SPI_BAUD_RATE_2 = 0,
-  SPI_BAUD_RATE_4,
-  SPI_BAUD_RATE_8,
-  SPI_BAUD_RATE_16,
-  SPI_BAUD_RATE_32,
-  SPI_BAUD_RATE_64,
-  SPI_BAUD_RATE_128,
-  SPI_BAUD_RATE_256
-} SPI_BAUD_RATE;
 
 /**
  * Peripheral clock setup

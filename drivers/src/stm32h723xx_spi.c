@@ -24,17 +24,18 @@ void SPI_peri_clock_control(SPI_RegDef_t *p_SPI_x, uint8_t en_state) {
 
   static uint8_t const SPIx_EN_BIT_POS[6] = {12, 14, 15, 13, 20, 5};
 
-  uint32_t SPIx_RCC_REG[6] = {RCC->APB2ENR, RCC->APB1LENR, RCC->APB1LENR,
-                              RCC->APB2ENR, RCC->APB2ENR,  RCC->APB4ENR};
+  volatile uint32_t *SPIx_RCC_REG[6] = {&(RCC->APB2ENR),  &(RCC->APB1LENR),
+                                        &(RCC->APB1LENR), &(RCC->APB2ENR),
+                                        &(RCC->APB2ENR),  &(RCC->APB4ENR)};
 
   for (int i = 0; i < sizeof(SPIx_BASE_ADDRS) / sizeof(SPI_RegDef_t *); i++) {
     if (p_SPI_x != SPIx_BASE_ADDRS[i])
       continue;
 
     if (en_state == ENABLE)
-      SPIx_RCC_REG[i] |= (1 << SPIx_EN_BIT_POS[i]);
+      *SPIx_RCC_REG[i] |= (1 << SPIx_EN_BIT_POS[i]);
     else
-      SPIx_RCC_REG[i] &= ~(1 << SPIx_EN_BIT_POS[i]);
+      *SPIx_RCC_REG[i] &= ~(1 << SPIx_EN_BIT_POS[i]);
 
     break;
   }
@@ -80,14 +81,14 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
   }
 
   // Set parameters given to us from the config struct
-  (*spi_reg)->CFG2 = cfg->device_mode << SPI_CFG2_MASTER;
-  (*spi_reg)->CFG2 |= cfg->bus_config << SPI_CFG2_COMM;
-  (*spi_reg)->CFG2 |= cfg->cpha << SPI_CFG2_CPHA;
-  (*spi_reg)->CFG2 |= cfg->cpol << SPI_CFG2_CPOL;
+  (*spi_reg)->CFG2 = ((uint8_t)cfg->device_mode) << SPI_CFG2_MASTER;
+  (*spi_reg)->CFG2 |= ((uint8_t)cfg->bus_config) << SPI_CFG2_COMM;
+  (*spi_reg)->CFG2 |= ((uint8_t)cfg->cpha) << SPI_CFG2_CPHA;
+  (*spi_reg)->CFG2 |= ((uint8_t)cfg->cpol) << SPI_CFG2_CPOL;
 
   // Not sure I need the outer if statement. Only allows for SSM when in master
   // mode.
-  if (cfg->device_mode == SPI_MASTER) {
+  if (cfg->device_mode == SPI_DEVICE_MODE_MASTER) {
     if (cfg->ssm == SPI_SSM_ENABLE)
       (*spi_reg)->CFG2 |= (1 << SPI_CFG2_SSM);
     else
@@ -95,8 +96,8 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
   }
 
   // Set the baud rate and data frame size
-  (*spi_reg)->CFG1 = (cfg->speed << SPI_CFG1_MBR);
-  (*spi_reg)->CFG1 |= (cfg->dff << SPI_CFG1_DSIZE);
+  (*spi_reg)->CFG1 = ((uint8_t)cfg->baud_divisor) << SPI_CFG1_MBR;
+  (*spi_reg)->CFG1 |= ((uint8_t)cfg->dff) << SPI_CFG1_DSIZE;
 
   // Lock the SPI registers so SPI is ready for use
   (*spi_reg)->CR1 |= (1 << SPI_CR1_IOLOCK) + (1 << SPI_CR1_SPE);
