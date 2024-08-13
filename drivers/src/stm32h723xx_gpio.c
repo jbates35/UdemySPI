@@ -52,7 +52,7 @@ void GPIO_init(GPIO_Handle_t *p_GPIO_handle) {
   // Create pointers to the GPIO port and the pin configuration for easier
   // access/readability
   GPIO_RegDef_t *gpiox = p_GPIO_handle->p_GPIO_x;
-  GPIO_PinConfig_t *cfg = &(p_GPIO_handle->GPIO_pin_config);
+  const GPIO_PinConfig_t *cfg = &(p_GPIO_handle->GPIO_pin_config);
 
   // For easy bit-shifting, dshift is 2*pin number, whereas sshift is just
   // pin_number
@@ -72,6 +72,7 @@ void GPIO_init(GPIO_Handle_t *p_GPIO_handle) {
         GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOF,
         GPIOG, GPIOH, NULL,  GPIOJ, GPIOK};
 
+    /********* INTERRUPT LOGIC STARTS HERE **********/
     // Turn on correct EXTI
     for (int bank = 0;
          bank < sizeof(GPIOx_BASE_ADDRS) / sizeof(GPIO_RegDef_t *); bank++) {
@@ -119,6 +120,8 @@ void GPIO_init(GPIO_Handle_t *p_GPIO_handle) {
   const uint8_t alt_shift = (cfg->GPIO_pin_number * 4) % 32;
   gpiox->AFR[alt_no] &= ~(0xF << alt_shift);
   gpiox->AFR[alt_no] |= cfg->GPIO_pin_alt_func_mode << alt_shift;
+
+  int a = 5;
 }
 
 /**
@@ -134,6 +137,7 @@ void GPIO_deinit(GPIO_RegDef_t *p_GPIO_x) {
       GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOF,
       GPIOG, GPIOH, NULL,  GPIOJ, GPIOK};
 
+  // Get the correct integer to reset the GPIO port
   for (int i = 0; i < sizeof(GPIOx_BASE_ADDRS) / sizeof(GPIO_RegDef_t *); i++) {
     if (p_GPIO_x != GPIOx_BASE_ADDRS[i])
       continue;
@@ -152,7 +156,7 @@ void GPIO_deinit(GPIO_RegDef_t *p_GPIO_x) {
  * @param pin Pin to be read
  * @return uint8_t Value of the input associated with the pin
  */
-uint8_t GPIO_read_from_input_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin) {
+uint8_t GPIO_read_from_input_pin(const GPIO_RegDef_t *p_GPIO_x, uint8_t pin) {
   if (p_GPIO_x == NULL)
     return 0;
 
@@ -165,7 +169,7 @@ uint8_t GPIO_read_from_input_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin) {
  * @param p_GPIO_x GPIO port information
  * @return uint16_t Word containing the value of the GPIO port
  */
-uint16_t GPIO_read_from_input_port(GPIO_RegDef_t *p_GPIO_x) {
+uint16_t GPIO_read_from_input_port(const GPIO_RegDef_t *p_GPIO_x) {
   if (p_GPIO_x == NULL)
     return 0;
 

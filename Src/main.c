@@ -25,6 +25,17 @@
       ;                                                                        \
   } while (0)
 
+/******* PINS *********/
+#define LED_GREEN_PORT GPIOB
+#define LED_GREEN_PIN 0
+#define LED_YELLOW_PORT GPIOE
+#define LED_YELLOW_PIN 1
+#define LED_RED_PORT GPIOB
+#define LED_RED_PIN 14
+
+#define USER_PBUTTON_PORT GPIOC
+#define USER_PBUTTON_PIN 13
+
 #include <stdint.h>
 #include <string.h>
 
@@ -45,10 +56,12 @@ int main(void) {
   char user_data[] = "Hello world";
   int len = strlen(user_data);
 
+  GPIO_write_to_output_pin(GPIOB, 14, 1);
+
   /* Loop forever */
   for (;;) {
-    //    SPI_send(SPI1, (uint8_t *)user_data, len);
-    //    WAIT(SLOW);
+    SPI_send(SPI1, (uint8_t *)user_data, len);
+    WAIT(SLOW);
   }
 }
 
@@ -91,8 +104,8 @@ void program_init(void) {
   GPIO_init(&gpio_handle);
 
   // User button PC13
-  *addr = GPIOC;
-  cfg->GPIO_pin_number = 13;
+  *addr = USER_PBUTTON_PORT;
+  cfg->GPIO_pin_number = USER_PBUTTON_PIN;
   cfg->GPIO_pin_mode = GPIO_MODE_IT_FT;
   cfg->GPIO_pin_speed = GPIO_SPEED_LOW;
   cfg->GPIO_pin_pupd_control = GPIO_PUPDR_PULLDOWN;
@@ -103,34 +116,35 @@ void program_init(void) {
   GPIO_irq_priority_config(IRQ_NO_EXTI15_10, 13);
 
   // LED PB0
-  *addr = GPIOE;
-  cfg->GPIO_pin_number = 1;
+  *addr = LED_GREEN_PORT;
+  cfg->GPIO_pin_number = LED_GREEN_PIN;
   cfg->GPIO_pin_mode = GPIO_MODE_OUT;
   cfg->GPIO_pin_speed = GPIO_SPEED_LOW;
   cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
   cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
   cfg->GPIO_pin_alt_func_mode = 0;
   GPIO_init(&gpio_handle);
-  /*
-    // Config spi
-    SPI_Handle_t spi_handle;
-    SPI_Config_t *spi_cfg = &spi_handle.SPI_config;
-    SPI_RegDef_t **spi_reg = &spi_handle.p_SPI_x;
 
-    *spi_reg = SPI1;
-    spi_cfg->device_mode = SPI_DEVICE_MODE_MASTER;
-    spi_cfg->bus_config = SPI_BUS_CONFIG_HALF_DUPLEX;
-    spi_cfg->cpol = SPI_CPOL_CAPTURE_ACTIVE_HIGH;
-    spi_cfg->cpha = SPI_CPHA_CAPTURE_SECOND_EDGE;
-    spi_cfg->ssm = SPI_SSM_ENABLE;
-    spi_cfg->baud_divisor = SPI_BAUD_DIVISOR_8;
-    spi_cfg->dff = SPI_DFF_16_BIT;
-    SPI_init(&spi_handle);
-  */
+  // Config spi
+  SPI_Handle_t spi_handle;
+  SPI_Config_t *spi_cfg = &spi_handle.SPI_config;
+  SPI_RegDef_t **spi_reg = &spi_handle.p_SPI_x;
+
+  *spi_reg = SPI1;
+  spi_cfg->device_mode = SPI_DEVICE_MODE_MASTER;
+  spi_cfg->bus_config = SPI_BUS_CONFIG_HALF_DUPLEX;
+  spi_cfg->cpol = SPI_CPOL_CAPTURE_ACTIVE_HIGH;
+  spi_cfg->cpha = SPI_CPHA_CAPTURE_SECOND_EDGE;
+  spi_cfg->ssm = SPI_SSM_ENABLE;
+  spi_cfg->baud_divisor = SPI_BAUD_DIVISOR_8;
+  spi_cfg->dff = SPI_DFF_16_BIT;
+  SPI_init(&spi_handle);
+
   int asdf2 = 0;
+  asdf2 = 44;
 }
 
 void EXTI15_10_IRQHandler(void) {
-  if (GPIO_irq_handling(13))
-    GPIO_toggle_output_pin(GPIOE, 1);
+  if (GPIO_irq_handling(USER_PBUTTON_PIN))
+    GPIO_toggle_output_pin(LED_GREEN_PORT, LED_GREEN_PIN);
 }

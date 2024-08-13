@@ -87,8 +87,8 @@ void GPIO_deinit(GPIO_RegDef_t *p_GPIO_x);
 /*
  * Data read and write
  */
-uint8_t GPIO_read_from_input_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin);
-uint16_t GPIO_read_from_input_port(GPIO_RegDef_t *p_GPIO_x);
+uint8_t GPIO_read_from_input_pin(const GPIO_RegDef_t *p_GPIO_x, uint8_t pin);
+uint16_t GPIO_read_from_input_port(const GPIO_RegDef_t *p_GPIO_x);
 void GPIO_write_to_output_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin,
                               uint8_t val);
 void GPIO_write_to_output_port(GPIO_RegDef_t *p_GPIO_x, uint16_t val);
