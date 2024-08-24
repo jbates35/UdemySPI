@@ -51,9 +51,6 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
   SPI_Config_t *cfg = &(p_SPI_handle->SPI_config);
   SPI_RegDef_t **spi_reg = &(p_SPI_handle->p_SPI_x);
 
-  // First set IOLOCK bit to modify register
-  (*spi_reg)->CR1 &= ~((1 << SPI_CR1_IOLOCK) + (1 << SPI_CR1_SPE));
-
   // Reset the SPI peripheral before configuring
   static SPI_RegDef_t *const SPIx_BASE_ADDRS[6] = {SPI1, SPI2, SPI3,
                                                    SPI4, SPI5, SPI6};
@@ -69,38 +66,51 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
     if (*spi_reg != SPIx_BASE_ADDRS[i])
       continue;
 
-    // Reset the peripheral by turning reset bit on/off
-    SPIx_RCC_REG[i] |= (1 << SPIx_EN_BIT_POS[i]);
-
-    // Add a delay to make sure the reset is complete
-    delay(1);
-
-    SPIx_RCC_REG[i] &= ~(1 << SPIx_EN_BIT_POS[i]);
-
+    // SPIx_RCC_REG[i] |= (1 << SPIx_EN_BIT_POS[i]);
+    // // Reset the peripheral by turning reset bit on/off
+    // delay(1);
+    // SPIx_RCC_REG[i] &= ~(1 << SPIx_EN_BIT_POS[i]);
+    // delay(1);
     break;
   }
 
-  // Set parameters given to us from the config struct
-  (*spi_reg)->CFG2 = ((uint8_t)cfg->device_mode) << SPI_CFG2_MASTER;
-  (*spi_reg)->CFG2 |= ((uint8_t)cfg->bus_config) << SPI_CFG2_COMM;
-  (*spi_reg)->CFG2 |= ((uint8_t)cfg->cpha) << SPI_CFG2_CPHA;
-  (*spi_reg)->CFG2 |= ((uint8_t)cfg->cpol) << SPI_CFG2_CPOL;
+  // First disable SPE so SPI can be written
+  (*spi_reg)->CR1 &= ~(1 << SPI_CR1_SPE);
+
+  uint32_t tmp_cfg_word = 0;
+  tmp_cfg_word |= (cfg->bus_config) << SPI_CFG2_COMM;
+  tmp_cfg_word |= (cfg->cpha) << SPI_CFG2_CPHA;
+  tmp_cfg_word |= (cfg->cpol) << SPI_CFG2_CPOL;
+  tmp_cfg_word |= (cfg->device_mode) << SPI_CFG2_MASTER;
 
   // Not sure I need the outer if statement. Only allows for SSM when in master
   // mode.
   if (cfg->device_mode == SPI_DEVICE_MODE_MASTER) {
-    if (cfg->ssm == SPI_SSM_ENABLE)
-      (*spi_reg)->CFG2 |= (1 << SPI_CFG2_SSM);
-    else
-      (*spi_reg)->CFG2 |= (0 << SPI_CFG2_SSM) + (1 << SPI_CFG2_SSOE);
+    if (cfg->ssm == SPI_SSM_ENABLE) {
+      tmp_cfg_word |= (1 << SPI_CFG2_SSM);
+      tmp_cfg_word &= ~(1 << SPI_CFG2_SSOM);
+    } else {
+      tmp_cfg_word |= (1 << SPI_CFG2_SSOE);
+      tmp_cfg_word &= ~(1 << SPI_CFG2_SSM);
+    }
   }
+
+  (*spi_reg)->CFG2 = tmp_cfg_word;
+  (*spi_reg)->CFG2 = tmp_cfg_word;
 
   // Set the baud rate and data frame size
   (*spi_reg)->CFG1 = ((uint8_t)cfg->baud_divisor) << SPI_CFG1_MBR;
   (*spi_reg)->CFG1 |= ((uint8_t)cfg->dff) << SPI_CFG1_DSIZE;
 
-  // Lock the SPI registers so SPI is ready for use
-  (*spi_reg)->CR1 |= (1 << SPI_CR1_IOLOCK) + (1 << SPI_CR1_SPE);
+  // Enable the SPI register
+  (*spi_reg)->CR1 |= 1;
+  (*spi_reg)->CR1 |= 1;
+  (*spi_reg)->CR1 |= 1;
+  (*spi_reg)->CR1 |= 1;
+  (*spi_reg)->CR1 |= 1;
+  (*spi_reg)->CR1 |= 1;
+
+  int asdf=0;
 }
 
 void SPI_deinit(SPI_RegDef_t *p_SPI_x) {

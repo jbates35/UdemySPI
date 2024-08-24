@@ -328,7 +328,7 @@ typedef struct EXTI_RegDef {
   __vo uint32_t CPUPR3;      // EXTI Pending register
 } EXTI_RegDef_t;
 
-typedef struct {
+typedef struct SPI_RegDef {
   __vo uint32_t CR1;         // SPI control register 1
   __vo uint32_t CR2;         // SPI control register 2
   __vo uint32_t CFG1;        // SPI configuration register 1
