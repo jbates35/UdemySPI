@@ -36,6 +36,18 @@
 #define USER_PBUTTON_PORT GPIOC
 #define USER_PBUTTON_PIN 13
 
+#define SPI1_GPIO_PORT GPIOA
+#define SPI1_CLOCK_PIN 5
+#define SPI1_NSS_PIN 4
+#define SPI1_MISO_PIN 6
+#define SPI1_MOSI_PIN 7
+
+#define SPI4_GPIO_PORT GPIOE
+#define SPI4_CLOCK_PIN 2
+#define SPI4_NSS_PIN 4
+#define SPI4_MISO_PIN 5
+#define SPI4_MOSI_PIN 6
+
 #include <stdint.h>
 #include <string.h>
 
@@ -48,10 +60,15 @@
     "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
+void spi_init(void);
 void program_init(void);
 
 int main(void) {
+
   program_init();
+
+  SPI_peri_clock_control(SPI1, ENABLE);
+  spi_init();
 
   char user_data[] = "Hello world";
   int len = strlen(user_data);
@@ -65,6 +82,55 @@ int main(void) {
   }
 }
 
+void spi_init(void) {
+
+  // Create GPIO handler and assign shortcuts for easier access
+  GPIO_Handle_t gpio_handle;
+  GPIO_RegDef_t **addr = &gpio_handle.p_GPIO_x;
+  GPIO_PinConfig_t *cfg = &gpio_handle.GPIO_pin_config;
+
+  SYSCFG_PCLK_EN();
+
+  // SPI 4 Init
+  *addr = SPI1_GPIO_PORT;
+  cfg->GPIO_pin_mode = GPIO_MODE_ALTFN;
+  cfg->GPIO_pin_speed = GPIO_SPEED_HIGH;
+  cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
+  cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
+  cfg->GPIO_pin_alt_func_mode = 5;
+
+  // PE4 - SPI_4_NSS
+  cfg->GPIO_pin_number = SPI1_NSS_PIN;
+  GPIO_init(&gpio_handle);
+
+  // PE5 - SPI_4_MISO
+  cfg->GPIO_pin_number = SPI1_MISO_PIN;
+  GPIO_init(&gpio_handle);
+
+  // PE6 - SPI_4_MOSI
+  cfg->GPIO_pin_number = SPI1_MOSI_PIN;
+  GPIO_init(&gpio_handle);
+
+  // PE2 - SPI_4_SCK
+  cfg->GPIO_pin_number = SPI1_CLOCK_PIN;
+  GPIO_init(&gpio_handle);
+
+  // Config spi
+  SPI_Handle_t spi_handle;
+  SPI_Config_t *spi_cfg = &spi_handle.SPI_config;
+  SPI_RegDef_t **spi_reg = &spi_handle.p_SPI_x;
+
+  *spi_reg = SPI1;
+  spi_cfg->device_mode = SPI_DEVICE_MODE_MASTER;
+  spi_cfg->bus_config = SPI_BUS_CONFIG_FULL_DUPLEX;
+  spi_cfg->cpol = SPI_CPOL_CAPTURE_ACTIVE_HIGH;
+  spi_cfg->cpha = SPI_CPHA_CAPTURE_SECOND_EDGE;
+  spi_cfg->ssm = SPI_SSM_ENABLE;
+  spi_cfg->baud_divisor = SPI_BAUD_DIVISOR_8;
+  spi_cfg->dff = SPI_DFF_16_BIT;
+  SPI_init(&spi_handle);
+}
+
 void program_init(void) {
   // User button PC13
   // LED is on PB0
@@ -72,7 +138,6 @@ void program_init(void) {
   GPIO_peri_clock_control(GPIOB, ENABLE);
   GPIO_peri_clock_control(GPIOC, ENABLE);
   GPIO_peri_clock_control(GPIOE, ENABLE);
-  SPI_peri_clock_control(SPI1, ENABLE);
 
   SYSCFG_PCLK_EN();
 
@@ -80,28 +145,6 @@ void program_init(void) {
   GPIO_Handle_t gpio_handle;
   GPIO_RegDef_t **addr = &gpio_handle.p_GPIO_x;
   GPIO_PinConfig_t *cfg = &gpio_handle.GPIO_pin_config;
-
-  *addr = GPIOA;
-  // PE4 - SPI_4_NSS
-  cfg->GPIO_pin_number = 4;
-  cfg->GPIO_pin_mode = GPIO_MODE_ALTFN;
-  cfg->GPIO_pin_speed = GPIO_SPEED_HIGH;
-  cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
-  cfg->GPIO_pin_out_type = GPIO_OP_TYPE_OPENDRAIN;
-  cfg->GPIO_pin_alt_func_mode = 5;
-  GPIO_init(&gpio_handle);
-
-  // PE5 - SPI_4_MISO
-  cfg->GPIO_pin_number = 5;
-  GPIO_init(&gpio_handle);
-
-  // PE6 - SPI_4_MOSI
-  cfg->GPIO_pin_number = 6;
-  GPIO_init(&gpio_handle);
-
-  // PE2 - SPI_4_SCK
-  cfg->GPIO_pin_number = 2;
-  GPIO_init(&gpio_handle);
 
   // User button PC13
   *addr = USER_PBUTTON_PORT;
@@ -124,21 +167,6 @@ void program_init(void) {
   cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
   cfg->GPIO_pin_alt_func_mode = 0;
   GPIO_init(&gpio_handle);
-
-  // Config spi
-  SPI_Handle_t spi_handle;
-  SPI_Config_t *spi_cfg = &spi_handle.SPI_config;
-  SPI_RegDef_t **spi_reg = &spi_handle.p_SPI_x;
-
-  *spi_reg = SPI1;
-  spi_cfg->device_mode = SPI_DEVICE_MODE_MASTER;
-  spi_cfg->bus_config = SPI_BUS_CONFIG_HALF_DUPLEX;
-  spi_cfg->cpol = SPI_CPOL_CAPTURE_ACTIVE_HIGH;
-  spi_cfg->cpha = SPI_CPHA_CAPTURE_SECOND_EDGE;
-  spi_cfg->ssm = SPI_SSM_ENABLE;
-  spi_cfg->baud_divisor = SPI_BAUD_DIVISOR_8;
-  spi_cfg->dff = SPI_DFF_16_BIT;
-  SPI_init(&spi_handle);
 
   int asdf2 = 0;
   asdf2 = 44;
