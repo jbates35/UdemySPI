@@ -66,37 +66,36 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
     if (*spi_reg != SPIx_BASE_ADDRS[i])
       continue;
 
-    // SPIx_RCC_REG[i] |= (1 << SPIx_EN_BIT_POS[i]);
-    // // Reset the peripheral by turning reset bit on/off
-    // delay(1);
-    // SPIx_RCC_REG[i] &= ~(1 << SPIx_EN_BIT_POS[i]);
-    // delay(1);
+    // Reset the peripheral by turning reset bit on/off
+    SPIx_RCC_REG[i] |= (1 << SPIx_EN_BIT_POS[i]);
+    delay(1);
+    SPIx_RCC_REG[i] &= ~(1 << SPIx_EN_BIT_POS[i]);
     break;
   }
 
   // First disable SPE so SPI can be written
+  (*spi_reg)->CR1 = 0;
   (*spi_reg)->CR1 &= ~(1 << SPI_CR1_SPE);
 
-  uint32_t tmp_cfg_word = 0;
-  tmp_cfg_word |= (cfg->bus_config) << SPI_CFG2_COMM;
-  tmp_cfg_word |= (cfg->cpha) << SPI_CFG2_CPHA;
-  tmp_cfg_word |= (cfg->cpol) << SPI_CFG2_CPOL;
-  tmp_cfg_word |= (cfg->device_mode) << SPI_CFG2_MASTER;
+  uint32_t tmp_cfg2_word = 0;
+  tmp_cfg2_word |= (cfg->bus_config) << SPI_CFG2_COMM;
+  tmp_cfg2_word |= (cfg->cpha) << SPI_CFG2_CPHA;
+  tmp_cfg2_word |= (cfg->cpol) << SPI_CFG2_CPOL;
+  tmp_cfg2_word |= (cfg->device_mode) << SPI_CFG2_MASTER;
 
   // Not sure I need the outer if statement. Only allows for SSM when in master
   // mode.
   if (cfg->device_mode == SPI_DEVICE_MODE_MASTER) {
     if (cfg->ssm == SPI_SSM_ENABLE) {
-      tmp_cfg_word |= (1 << SPI_CFG2_SSM);
-      tmp_cfg_word &= ~(1 << SPI_CFG2_SSOM);
+      tmp_cfg2_word |= (1 << SPI_CFG2_SSM);
+      tmp_cfg2_word &= ~(1 << SPI_CFG2_SSOM);
     } else {
-      tmp_cfg_word |= (1 << SPI_CFG2_SSOE);
-      tmp_cfg_word &= ~(1 << SPI_CFG2_SSM);
+      tmp_cfg2_word |= (1 << SPI_CFG2_SSOE);
+      tmp_cfg2_word &= ~(1 << SPI_CFG2_SSM);
     }
   }
 
-  (*spi_reg)->CFG2 = tmp_cfg_word;
-  (*spi_reg)->CFG2 = tmp_cfg_word;
+  (*spi_reg)->CFG2 = tmp_cfg2_word;
 
   // Set the baud rate and data frame size
   (*spi_reg)->CFG1 = ((uint8_t)cfg->baud_divisor) << SPI_CFG1_MBR;
@@ -104,13 +103,8 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
 
   // Enable the SPI register
   (*spi_reg)->CR1 |= 1;
-  (*spi_reg)->CR1 |= 1;
-  (*spi_reg)->CR1 |= 1;
-  (*spi_reg)->CR1 |= 1;
-  (*spi_reg)->CR1 |= 1;
-  (*spi_reg)->CR1 |= 1;
 
-  int asdf=0;
+  int asdf = 0;
 }
 
 void SPI_deinit(SPI_RegDef_t *p_SPI_x) {

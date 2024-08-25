@@ -41,12 +41,37 @@
 #define SPI1_NSS_PIN 4
 #define SPI1_MISO_PIN 6
 #define SPI1_MOSI_PIN 7
+#define SPI1_ALT_FN 5
+
+#define SPI2_GPIO_PORT GPIOB
+#define SPI2_CLOCK_PIN 13
+#define SPI2_NSS_PIN 12
+#define SPI2_MISO_PIN 14
+#define SPI2_MOSI_PIN 15
+#define SPI2_ALT_FN 5
+
+/* SPI3 uses multiple ports generally */
 
 #define SPI4_GPIO_PORT GPIOE
 #define SPI4_CLOCK_PIN 2
 #define SPI4_NSS_PIN 4
 #define SPI4_MISO_PIN 5
 #define SPI4_MOSI_PIN 6
+#define SPI4_ALT_FN 5
+
+#define SPI5_GPIO_PORT GPIOF
+#define SPI5_CLOCK_PIN 7
+#define SPI5_NSS_PIN 6
+#define SPI5_MISO_PIN 8
+#define SPI5_MOSI_PIN 9
+#define SPI5_ALT_FN 5
+
+#define SPI6_GPIO_PORT GPIOG
+#define SPI6_CLOCK_PIN 13
+#define SPI6_NSS_PIN 8
+#define SPI6_MISO_PIN 12
+#define SPI6_MOSI_PIN 14
+#define SPI6_ALT_FN 5
 
 #include <stdint.h>
 #include <string.h>
@@ -67,7 +92,7 @@ int main(void) {
 
   program_init();
 
-  SPI_peri_clock_control(SPI1, ENABLE);
+  SPI_peri_clock_control(SPI5, ENABLE);
   spi_init();
 
   char user_data[] = "Hello world";
@@ -77,7 +102,7 @@ int main(void) {
 
   /* Loop forever */
   for (;;) {
-    SPI_send(SPI1, (uint8_t *)user_data, len);
+    SPI_send(SPI5, (uint8_t *)user_data, len);
     WAIT(SLOW);
   }
 }
@@ -92,27 +117,27 @@ void spi_init(void) {
   SYSCFG_PCLK_EN();
 
   // SPI 4 Init
-  *addr = SPI1_GPIO_PORT;
+  *addr = SPI5_GPIO_PORT;
   cfg->GPIO_pin_mode = GPIO_MODE_ALTFN;
   cfg->GPIO_pin_speed = GPIO_SPEED_HIGH;
   cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
   cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
-  cfg->GPIO_pin_alt_func_mode = 5;
+  cfg->GPIO_pin_alt_func_mode = SPI5_ALT_FN;
 
   // PE4 - SPI_4_NSS
-  cfg->GPIO_pin_number = SPI1_NSS_PIN;
+  cfg->GPIO_pin_number = SPI5_NSS_PIN;
   GPIO_init(&gpio_handle);
 
   // PE5 - SPI_4_MISO
-  cfg->GPIO_pin_number = SPI1_MISO_PIN;
+  cfg->GPIO_pin_number = SPI5_MISO_PIN;
   GPIO_init(&gpio_handle);
 
   // PE6 - SPI_4_MOSI
-  cfg->GPIO_pin_number = SPI1_MOSI_PIN;
+  cfg->GPIO_pin_number = SPI5_MOSI_PIN;
   GPIO_init(&gpio_handle);
 
   // PE2 - SPI_4_SCK
-  cfg->GPIO_pin_number = SPI1_CLOCK_PIN;
+  cfg->GPIO_pin_number = SPI5_CLOCK_PIN;
   GPIO_init(&gpio_handle);
 
   // Config spi
@@ -120,7 +145,7 @@ void spi_init(void) {
   SPI_Config_t *spi_cfg = &spi_handle.SPI_config;
   SPI_RegDef_t **spi_reg = &spi_handle.p_SPI_x;
 
-  *spi_reg = SPI1;
+  *spi_reg = SPI5;
   spi_cfg->device_mode = SPI_DEVICE_MODE_MASTER;
   spi_cfg->bus_config = SPI_BUS_CONFIG_FULL_DUPLEX;
   spi_cfg->cpol = SPI_CPOL_CAPTURE_ACTIVE_HIGH;
