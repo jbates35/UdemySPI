@@ -12,11 +12,13 @@
 #include "stm32h723xx.h"
 
 /** Enums used in SPI configuration **/
+// Slave vs master
 typedef enum SPI_DEVICE_MODE {
   SPI_DEVICE_MODE_SLAVE = 0,
   SPI_DEVICE_MODE_MASTER
 } SPI_DEVICE_MODE;
 
+// Bus configuration (simplex duplex etc)
 typedef enum SPI_BUS_CONFIG {
   SPI_BUS_CONFIG_FULL_DUPLEX = 0,
   SPI_BUS_CONFIG_SIMPLEX_TX_ONLY,
@@ -24,6 +26,7 @@ typedef enum SPI_BUS_CONFIG {
   SPI_BUS_CONFIG_HALF_DUPLEX
 } SPI_BUS_CONFIG;
 
+// Data frame format
 typedef enum SPI_DFF {
   SPI_DFF_8_BIT = 8,
   SPI_DFF_16_BIT = 16,
@@ -31,16 +34,19 @@ typedef enum SPI_DFF {
   SPI_DFF_32_BIT = 32
 } SPI_DFF;
 
+// Clock phase angle
 typedef enum SPI_CPHA {
   SPI_CPHA_CAPTURE_FIRST_EDGE = 0,
   SPI_CPHA_CAPTURE_SECOND_EDGE
 } SPI_CPHA;
 
+// Clock polarity
 typedef enum SPI_CPOL {
   SPI_CPOL_CAPTURE_ACTIVE_HIGH = 0,
   SPI_CPOL_CAPTURE_ACTIVE_LOW
 } SPI_CPOL;
 
+// Software slave management
 typedef enum SPI_SSM { SPI_SSM_DISABLE = 0, SPI_SSM_ENABLE } SPI_SSM;
 
 typedef enum SPI_BAUD_DIVISOR {

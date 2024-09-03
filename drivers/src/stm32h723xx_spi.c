@@ -73,10 +73,6 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
     break;
   }
 
-  // First disable SPE so SPI can be written
-  (*spi_reg)->CR1 = 0;
-  (*spi_reg)->CR1 &= ~(1 << SPI_CR1_SPE);
-
   uint32_t tmp_cfg2_word = 0;
   tmp_cfg2_word |= (cfg->bus_config) << SPI_CFG2_COMM;
   tmp_cfg2_word |= (cfg->cpha) << SPI_CFG2_CPHA;
@@ -86,6 +82,9 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
   // Not sure I need the outer if statement. Only allows for SSM when in master
   // mode.
   if (cfg->device_mode == SPI_DEVICE_MODE_MASTER) {
+    tmp_cfg2_word |= (1 << SPI_CFG2_SSIOP);
+
+    // Slave management software - SSM enable means software slave management
     if (cfg->ssm == SPI_SSM_ENABLE) {
       tmp_cfg2_word |= (1 << SPI_CFG2_SSM);
       tmp_cfg2_word &= ~(1 << SPI_CFG2_SSOM);
@@ -98,13 +97,11 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
   (*spi_reg)->CFG2 = tmp_cfg2_word;
 
   // Set the baud rate and data frame size
-  (*spi_reg)->CFG1 = ((uint8_t)cfg->baud_divisor) << SPI_CFG1_MBR;
-  (*spi_reg)->CFG1 |= ((uint8_t)cfg->dff) << SPI_CFG1_DSIZE;
+  (*spi_reg)->CFG1 = (cfg->baud_divisor) << SPI_CFG1_MBR;
+  (*spi_reg)->CFG1 |= (cfg->dff) << 0b00111; /* DOESNT WORK RIGHT NOW WHY */
 
   // Enable the SPI register
   (*spi_reg)->CR1 |= 1;
-
-  int asdf = 0;
 }
 
 void SPI_deinit(SPI_RegDef_t *p_SPI_x) {
