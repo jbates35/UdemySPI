@@ -141,37 +141,52 @@ void SPI_deinit(SPI_RegDef_t *p_SPI_x) {
 /**
  * SPI function for sending data
  * */
-void SPI_send(SPI_RegDef_t *p_SPI_x, uint8_t *p_tx_buffer, uint32_t len) {
+void SPI_send(SPI_RegDef_t *p_SPI_x, uint8_t *p_tx_buffer, int len) {
   while (len > 0) {
+
+    /*
+       In receive-only modes, half duplex (COMM[1:0]=11, HDDIR=0) or simplex
+      (COMM[1:0]=10) the master starts the sequence when SPI is enabled and
+      transaction is released by setting the CSTART bit.
+    */
+
     // Wait until TXE is set
-    while (!(p_SPI_x->SR & SPI_SR_TXP))
+    while (!(p_SPI_x->SR & (1 << SPI_SR_TXP)))
       ;
 
     // From the word size, calculate the amount of bits required to get the next
     // word from the buffer
-    int bit_count = ((p_SPI_x->CFG1 & (0x1F << SPI_CFG1_DSIZE)) - 1) / 8 + 1;
+    int bytes_per_tx = ((p_SPI_x->CFG1 & (0x1F << SPI_CFG1_DSIZE)) - 1) / 8 + 1;
+
+    // Ensure we don't transmit more than what's left in the buffer
+    if (len < bytes_per_tx)
+      bytes_per_tx = len;
 
     // Will be used to transmit via SPI
     uint32_t tx_word = 0;
 
     // Convert dataframe size into the amount of bytes, and therefore the amount
     // of times len has to be decremented
-    if (bit_count == 1) {
+    if (bytes_per_tx == 1) {
       tx_word = *((uint8_t *)p_tx_buffer);
       len--;
-    } else if (bit_count == 2) {
+    } else if (bytes_per_tx == 2) {
       tx_word = *((uint16_t *)p_tx_buffer);
       len -= 2;
-    } else if (bit_count == 3) {
+    } else if (bytes_per_tx == 3) {
       tx_word = *((uint32_t *)p_tx_buffer) & 0xFFFFFF;
       len -= 3;
-    } else if (bit_count == 4) {
+    } else if (bytes_per_tx == 4) {
       tx_word = *((uint32_t *)p_tx_buffer);
       len -= 4;
     }
 
     // Send word
     p_SPI_x->TXDR = tx_word;
+
+    p_tx_buffer += bytes_per_tx;
+
+    int asdfasdfasdf = 3;
   }
 }
 

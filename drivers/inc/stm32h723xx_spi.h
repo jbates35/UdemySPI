@@ -98,7 +98,7 @@ void SPI_deinit(SPI_RegDef_t *p_SPI_x);
 /**
  * SPI function for sending data
  * */
-void SPI_send(SPI_RegDef_t *p_SPI_x, uint8_t *p_tx_buffer, uint32_t len);
+void SPI_send(SPI_RegDef_t *p_SPI_x, uint8_t *p_tx_buffer, int len);
 
 /**
  * SPI function for receiving data

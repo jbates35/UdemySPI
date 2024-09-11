@@ -92,7 +92,7 @@ int main(void) {
 
   program_init();
 
-  SPI_peri_clock_control(SPI5, ENABLE);
+  SPI_peri_clock_control(SPI4, ENABLE);
   spi_init();
 
   char user_data[] = "Hello world";
@@ -102,7 +102,8 @@ int main(void) {
 
   /* Loop forever */
   for (;;) {
-    SPI_send(SPI5, (uint8_t *)user_data, len);
+    GPIO_toggle_output_pin(LED_GREEN_PORT, LED_GREEN_PIN);
+    SPI_send(SPI4, (uint8_t *)user_data, len);
     WAIT(SLOW);
   }
 }
@@ -117,27 +118,27 @@ void spi_init(void) {
   SYSCFG_PCLK_EN();
 
   // SPI 4 Init
-  *addr = SPI5_GPIO_PORT;
+  *addr = SPI4_GPIO_PORT;
   cfg->GPIO_pin_mode = GPIO_MODE_ALTFN;
   cfg->GPIO_pin_speed = GPIO_SPEED_HIGH;
   cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
   cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
-  cfg->GPIO_pin_alt_func_mode = SPI5_ALT_FN;
+  cfg->GPIO_pin_alt_func_mode = SPI4_ALT_FN;
 
   // PE4 - SPI_4_NSS
-  cfg->GPIO_pin_number = SPI5_NSS_PIN;
+  cfg->GPIO_pin_number = SPI4_NSS_PIN;
   GPIO_init(&gpio_handle);
 
   // PE5 - SPI_4_MISO
-  cfg->GPIO_pin_number = SPI5_MISO_PIN;
+  cfg->GPIO_pin_number = SPI4_MISO_PIN;
   GPIO_init(&gpio_handle);
 
   // PE6 - SPI_4_MOSI
-  cfg->GPIO_pin_number = SPI5_MOSI_PIN;
+  cfg->GPIO_pin_number = SPI4_MOSI_PIN;
   GPIO_init(&gpio_handle);
 
   // PE2 - SPI_4_SCK
-  cfg->GPIO_pin_number = SPI5_CLOCK_PIN;
+  cfg->GPIO_pin_number = SPI4_CLOCK_PIN;
   GPIO_init(&gpio_handle);
 
   // Config spi
@@ -145,14 +146,14 @@ void spi_init(void) {
   SPI_Config_t *spi_cfg = &spi_handle.SPI_config;
   SPI_RegDef_t **spi_reg = &spi_handle.p_SPI_x;
 
-  *spi_reg = SPI5;
+  *spi_reg = SPI4;
   spi_cfg->device_mode = SPI_DEVICE_MODE_MASTER;
   spi_cfg->bus_config = SPI_BUS_CONFIG_FULL_DUPLEX;
   spi_cfg->cpol = SPI_CPOL_CAPTURE_ACTIVE_HIGH;
   spi_cfg->cpha = SPI_CPHA_CAPTURE_SECOND_EDGE;
   spi_cfg->ssm = SPI_SSM_ENABLE;
   spi_cfg->baud_divisor = SPI_BAUD_DIVISOR_8;
-  spi_cfg->dff = SPI_DFF_16_BIT;
+  spi_cfg->dff = SPI_DFF_8_BIT;
   SPI_init(&spi_handle);
 }
 
