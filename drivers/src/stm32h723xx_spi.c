@@ -98,7 +98,7 @@ void SPI_init(SPI_Handle_t *p_SPI_handle) {
 
   // Set the baud rate and data frame size
   (*spi_reg)->CFG1 = (cfg->baud_divisor) << SPI_CFG1_MBR;
-  (*spi_reg)->CFG1 |= (cfg->dff) << 0b00111; /* DOESNT WORK RIGHT NOW WHY */
+  (*spi_reg)->CFG1 |= (cfg->dff) << SPI_CFG1_DSIZE;
 
   // Enable the SPI register
   (*spi_reg)->CR1 |= 1;

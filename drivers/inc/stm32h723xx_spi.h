@@ -12,7 +12,6 @@
 #include "stm32h723xx.h"
 
 /** Enums used in SPI configuration **/
-// Slave vs master
 typedef enum SPI_DEVICE_MODE {
   SPI_DEVICE_MODE_SLAVE = 0,
   SPI_DEVICE_MODE_MASTER
@@ -28,10 +27,11 @@ typedef enum SPI_BUS_CONFIG {
 
 // Data frame format
 typedef enum SPI_DFF {
-  SPI_DFF_8_BIT = 8,
-  SPI_DFF_16_BIT = 16,
-  SPI_DFF_24_BIT = 24,
-  SPI_DFF_32_BIT = 32
+  SPI_DFF_4_BIT = 0x3,
+  SPI_DFF_8_BIT = 0x7,
+  SPI_DFF_16_BIT = 0xf,
+  SPI_DFF_24_BIT = 0x17,
+  SPI_DFF_32_BIT = 0x1f
 } SPI_DFF;
 
 // Clock phase angle
