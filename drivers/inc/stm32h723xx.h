@@ -653,6 +653,268 @@ typedef enum {
 #define TIM23_PCLK_DIS() (RCC->APB1HENR &= ~(1 << 24))
 #define TIM24_PCLK_DIS() (RCC->APB1HENR &= ~(1 << 25))
 
+#define TIM1 ((GenTimer_RegDef_t *)TIM1_BASEADDR)
+#define TIM2 ((GenTimer_RegDef_t *)TIM2_BASEADDR)
+#define TIM3 ((GenTimer_RegDef_t *)TIM3_BASEADDR)
+#define TIM5 ((GenTimer_RegDef_t *)TIM5_BASEADDR)
+#define TIM6 ((GenTimer_RegDef_t *)TIM6_BASEADDR)
+#define TIM7 ((GenTimer_RegDef_t *)TIM7_BASEADDR)
+#define TIM8 ((GenTimer_RegDef_t *)TIM8_BASEADDR)
+#define TIM12 ((GenTimer_RegDef_t *)TIM12_BASEADDR)
+#define TIM13 ((GenTimer_RegDef_t *)TIM13_BASEADDR)
+#define TIM14 ((GenTimer_RegDef_t *)TIM14_BASEADDR)
+#define TIM16 ((GenTimer_RegDef_t *)TIM15_BASEADDR)
+#define TIM15 ((GenTimer_RegDef_t *)TIM16_BASEADDR)
+#define TIM17 ((GenTimer_RegDef_t *)TIM17_BASEADDR)
+#define TIM23 ((GenTimer_RegDef_t *)TIM23_BASEADDR)
+#define TIM24 ((GenTimer_RegDef_t *)TIM24_BASEADDR)
+
+typedef enum {
+  TIM_CR1_CEN = 0,
+  TIM_CR1_UDIS,
+  TIM_CR1_URS,
+  TIM_CR1_OPM,
+  TIM_CR1_DIR,
+  TIM_CR1_CMS,
+  TIM_CR1_ARPE = 7,
+  TIM_CR1_CKD,
+  TIM_CR1_UIFRE_MAP = 11
+} TIM_CR1_BIT; // Control Register 1
+
+typedef enum {
+  TIM_CR2_CCPC = 0,
+  TIM_CR2_CCUS = 2,
+  TIM_CR2_CCDS,
+  TIM_CR2_MMS,
+  TIM_CR2_TI1S = 7,
+  TIM_CR2_OIS1,
+  TIM_CR2_OIS1N,
+  TIM_CR2_OIS2,
+  TIM_CR2_OIS2N,
+  TIM_CR2_OIS3,
+  TIM_CR2_OIS3N,
+  TIM_CR2_OIS4,
+  TIM_CR2_OIS5 = 16,
+  TIM_CR2_OIS6 = 18,
+  TIM_CR2_MMS2 = 20
+} TIM_CR2_BIT; // Control Register 2
+
+typedef enum {
+  TIM_SMCR_SMS = 0,
+  TIM_SMCR_TS = 4,
+  TIM_SMCR_MSM = 7,
+  TIM_SMCR_ETF = 9,
+  TIM_SMCR_ETPS = 12,
+  TIM_SMCR_ECE = 14,
+  TIM_SMCR_ETP = 15,
+  TIM_SMCR_SMS2 = 16,
+  TIM_SMCR_TS2 = 20,
+} TIM_SMCR_BIT; // Slave Mode Control Register
+
+typedef enum {
+  TIM_DIER_UIE = 0,
+  TIM_DIER_CC1IE,
+  TIM_DIER_CC2IE,
+  TIM_DIER_ССЗІЕ,
+  TIM_DIER_CC4IE,
+  TIM_DIER_COMIE,
+  TIM_DIER_TIE,
+  TIM_DIER_BIE,
+  TIM_DIER_UDE,
+  TIM_DIER_CC1DE,
+  TIM_DIER_CC2DE,
+  TIM_DIER_CC3DE,
+  TIM_DIER_CC4DE,
+  TIM_DIER_COMDE,
+  TIM_DIER_TDE
+} TIM_DIER_BIT; // DMA/Interrupt Enable Register
+
+typedef enum {
+  TIM_SR_UIF = 0,
+  TIM_SR_CC1IF,
+  TIM_SR_CC2IF,
+  TIM_SR_CC3IF,
+  TIM_SR_CC4IF,
+  TIM_SR_COMIF,
+  TIM_SR_TIF,
+  TIM_SR_BIF,
+  TIM_SR_B2IF,
+  TIM_SR_CC10F,
+  TIM_SR_CC2OF,
+  TIM_SR_CC3OF,
+  TIM_SR_CC4OF,
+  TIM_SR_SBIF,
+  TIM_SR_CC5IF = 16,
+  TIM_SR_CC6IF
+} TIM_SR_BIT; // Status Register
+
+typedef enum {
+  TIM_EGR_UG = 0,
+  TIM_EGR_CC1G,
+  TIM_EGR_CC2G,
+  TIM_EGR_CC3G,
+  TIM_EGR_CC4G,
+  TIM_EGR_COMG,
+  TIM_EGR_TG,
+  TIM_EGR_BG,
+  TIM_EGR_B2G
+} TIM_EGR_BIT; // Event Generation Register
+
+typedef enum {
+  TIM_CCMR1_CC1S = 0,
+  TIM_CCMR1_OC1_FE = 2,
+  TIM_CCMR1_OC1_PE,
+  TIM_CCMR1_OC1M,
+  TIM_CCMR1_OC1_CE = 7,
+  TIM_CCMR1_CC2S,
+  TIM_CCMR1_OC2_FE = 10,
+  TIM_CCMR1_OC2_PE,
+  TIM_CCMR1_OC2M,
+  TIM_CCMR1_OC2_CE = 15,
+  TIM_CCMR1_OC1M2,
+  TIM_CCMR1_OC2M2 = 24
+} TIM_CCMR1_BIT; // Capture/Compare Mode Register 1
+
+typedef enum {
+  TIM_CCMR2_OP_CC1S = 0,
+  TIM_CCMR2_OP_IC1PSC = 2,
+  TIM_CCMR2_OP_IC1F = 4,
+  TIM_CCMR2_OP_CC2S = 8,
+  TIM_CCMR2_OP_IC2PSC = 10,
+  TIM_CCMR2_OP_IC2F = 12,
+} TIM_CCMR2_OP_BIT; // Capture/Compare Mode Register 2
+
+typedef enum {
+  TIM_CCMR2_IP_CC3S = 0,
+  TIM_CCMR2_IP_OC3_FE = 2,
+  TIM_CCMR2_IP_OC3_PE,
+  TIM_CCMR2_IP_OC3M,
+  TIM_CCMR2_IP_OC3_CE = 7,
+  TIM_CCMR2_IP_CC4S,
+  TIM_CCMR2_IP_OC4_FE = 10,
+  TIM_CCMR2_IP_OC4_PE,
+  TIM_CCMR2_IP_OC4M,
+  TIM_CCMR2_IP_OC4_CE = 15,
+  TIM_CCMR2_IP_OC3M2,
+  TIM_CCMR2_IP_OC4M2 = 24
+} TIM_CCER_IP_BIT; // Capture/Compare Enable Register
+
+typedef enum {
+  TIM_CCER_CC1E = 0,
+  TIM_CCER_CC1P,
+  TIM_CCER_CC1NE,
+  TIM_CCER_CC1NP,
+  TIM_CCER_CC2E,
+  TIM_CCER_CC2P,
+  TIM_CCER_CC2NE,
+  TIM_CCER_CC2NP,
+  TIM_CCER_CC3E,
+  TIM_CCER_CC3P,
+  TIM_CCER_CC3NE,
+  TIM_CCER_CC3NP,
+  TIM_CCER_CC4E,
+  TIM_CCER_CC4P,
+  TIM_CCER_CC4NP = 15,
+  TIM_CCER_CC5E,
+  TIM_CCER_CC5P,
+  TIM_CCER_CC6E = 20,
+  TIM_CCER_CC6P
+} TIM_CCER_BIT; // Capture/Compare Enable Register
+
+typedef enum { TIM_CNT = 0, TIM_CNT_UIF_CPY = 31 } TIM_CNT_BIT; // Counter
+
+typedef enum { TIM_PSC = 0 } TIM_PSC_BIT; // Prescaler
+
+typedef enum { TIM_ARR = 0 } TIM_ARR_BIT; // Auto-Reload Register
+
+typedef enum { TIM_RCR_REP = 0 } TIM_RCR_BIT; // Repetition Counter Register
+
+typedef enum { TIM_CCR1 = 0 } TIM_CCR1_BIT; // Capture/Compare Register 1
+
+typedef enum { TIM_CCR2 = 0 } TIM_CCR2_BIT; // Capture/Compare Register 2
+
+typedef enum { TIM_CCR3 = 0 } TIM_CCR3_BIT; // Capture/Compare Register 3
+
+typedef enum { TIM_CCR4 = 0 } TIM_CCR4_BIT; // Capture/Compare Register 4
+
+typedef enum {
+  TIM_BDTR_DTG = 0,
+  TIM_BDTR_LOCK = 8,
+  TIM_BDTR_OSSI = 10,
+  TIM_BDTR_OSSR,
+  TIM_BDTR_BKE,
+  TIM_BDTR_BKP,
+  TIM_BDTR_AOE,
+  TIM_BDTR_MOE,
+  TIM_BDTR_BKF,
+  TIM_BDTR_BK2F = 20,
+  TIM_BDTR_BK2E = 24,
+  TIM_BDTR_BK2P,
+  TIM_BDTR_BKDSRM,
+  TIM_BDTR_BK2DSRM,
+  TIM_BDTR_BKBID,
+  TIM_BDTR_BK2BID
+} TIM_BDTR_BIT; // Break and Dead-Time Register
+
+typedef enum {
+  TIM_DCR_DBA = 0,
+  TIM_DCR_DBL = 8
+} TIM_DCR_BIT; // DMA Control Register
+
+typedef enum {
+  TIM_DMAR_DMAB = 0
+} TIM_DMAR_BIT; // DMA Address for Full Transfer
+
+typedef enum {
+  TIM_CCMR3_OC5FE = 2,
+  TIM_CCMR3_OC5PE,
+  TIM_CCMR3_OC5M,
+  TIM_CCMR3_OC5CE = 7,
+  TIM_CCMR3_OC6FE = 10,
+  TIM_CCMR3_OC6PE,
+  TIM_CCMR3_OC6M,
+  TIM_CCMR3_OC6CE = 15,
+  TIM_CCMR3_OC5M3,
+  TIM_CCMR3_OC6M3 = 24,
+} TIM_CCMR3_BIT; // Capture/Compare Mode Register 3
+
+typedef enum {
+  TIM_CCR5 = 0,
+  TIM_CCR5_GC5C1 = 29,
+  TIM_CCR5_GC5C2,
+  TIM_CCR5_GC5C3
+} TIM_CCR5_BIT; // Capture/Compare Register 5
+
+typedef enum { TIM_CCR6 = 0 } TIM_CCR6_BIT; // Capture/Compare Register 6
+
+typedef enum {
+  TIM_AF1_BKINE = 0,
+  TIM_AF1_BKCMP1E,
+  TIM_AF1_BKCMP2E,
+  TIM_AF1_BKDF1BK0E = 8,
+  TIM_AF1_BKINP,
+  TIM_AF1_BKCMP1P,
+  TIM_AF1_BKCMP2P,
+  TIM_AF1_ETRSEL = 14,
+} TIM_AF1_BIT; // Alternate Function Option Register 1
+
+typedef enum {
+  TIM_AF2_BK2INE = 0,
+  TIM_AF2_BK2CMP1E,
+  TIM_AF2_BK2CMP2E,
+  TIM_AF2_BK2DF1BK3E = 8,
+  TIM_AF2_BK2INP,
+  TIM_AF2_BK2CMP1P,
+  TIM_AF2_BK2CMP2P
+} TIM_AF2_BIT; // Alternate Function Option Register 2
+
+typedef enum {
+  TI1SEL = 0,
+  TI2SEL = 8,
+  TI3SEL = 16,
+  TI4SEL = 24,
+} TIM_TISEL_BIT; // Timer Input Selection Register
+
 /************** END: Timer register bit definitions ************/
 
 #endif /* STM32H743ZG_PERIPHERALS_H_ */
