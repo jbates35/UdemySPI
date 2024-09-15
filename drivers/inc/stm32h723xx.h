@@ -656,6 +656,7 @@ typedef enum {
 #define TIM1 ((GenTimer_RegDef_t *)TIM1_BASEADDR)
 #define TIM2 ((GenTimer_RegDef_t *)TIM2_BASEADDR)
 #define TIM3 ((GenTimer_RegDef_t *)TIM3_BASEADDR)
+#define TIM4 ((GenTimer_RegDef_t *)TIM4_BASEADDR)
 #define TIM5 ((GenTimer_RegDef_t *)TIM5_BASEADDR)
 #define TIM6 ((GenTimer_RegDef_t *)TIM6_BASEADDR)
 #define TIM7 ((GenTimer_RegDef_t *)TIM7_BASEADDR)
