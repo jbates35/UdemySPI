@@ -347,6 +347,36 @@ typedef struct SPI_RegDef {
   __vo uint32_t SPI_I2SCFGR; // SPI_I2S configuration register
 
 } SPI_RegDef_t;
+
+typedef struct GenTimer_RegDef {
+  __vo uint32_t CR1;   // Control Register 1
+  __vo uint32_t CR2;   // Control Register 2
+  __vo uint32_t SMCR;  // Slave Mode Control Register
+  __vo uint32_t DIER;  // DMA/Interrupt Enable Register
+  __vo uint32_t SR;    // Status Register
+  __vo uint32_t EGR;   // Event Generation Register
+  __vo uint32_t CCMR1; // Capture/Compare Mode Register 1
+  __vo uint32_t CCMR2; // Capture/Compare Mode Register 2
+  __vo uint32_t CCER;  // Capture/Compare Enable Register
+  __vo uint32_t CNT;   // Counter
+  __vo uint32_t PSC;   // Prescaler
+  __vo uint32_t ARR;   // Auto-Reload Register
+  __vo uint32_t RCR;   // Repetition Counter Register
+  __vo uint32_t CCR1;  // Capture/Compare Register 1
+  __vo uint32_t CCR2;  // Capture/Compare Register 2
+  __vo uint32_t CCR3;  // Capture/Compare Register 3
+  __vo uint32_t CCR4;  // Capture/Compare Register 4
+  __vo uint32_t BDTR;  // Break and Dead-Time Register
+  __vo uint32_t DCR;   // DMA Control Register
+  __vo uint32_t DMAR;  // DMA Address for Full Transfer
+  uint32_t RESERVED1;  // Reserved
+  __vo uint32_t CCMR3; // Capture/Compare Mode Register 3
+  __vo uint32_t CCR5;  // Capture/Compare Register 5
+  __vo uint32_t CCR6;  // Capture/Compare Register 6
+  __vo uint32_t AF1;   // Alternate Function Option Register 1
+  __vo uint32_t AF2;   // Alternate Function Option Register 2
+  __vo uint32_t TISEL; // Timer Input Selection Register
+} GenTimer_RegDef_t;
 //
 // Actual Pointer Notation with base addresses:
 #define RCC ((RCC_RegDef_t *)RCC_BASEADDR)
@@ -585,5 +615,44 @@ typedef enum {
 } SPI_I2SCFGR_BIT;
 
 /************** END: SPI register bit definitions *****************/
+
+/************** START: Timer register bit definitions ************/
+
+// Timer macros
+#define TIM1_PCLK_EN() (RCC->APB2ENR |= (1 << 0))
+#define TIM2_PCLK_EN() (RCC->APB1LENR |= (1 << 0))
+#define TIM3_PCLK_EN() (RCC->APB1LENR |= (1 << 1))
+#define TIM4_PCLK_EN() (RCC->APB1LENR |= (1 << 2))
+#define TIM5_PCLK_EN() (RCC->APB1LENR |= (1 << 3))
+#define TIM6_PCLK_EN() (RCC->APB1LENR |= (1 << 4))
+#define TIM7_PCLK_EN() (RCC->APB1LENR |= (1 << 5))
+#define TIM8_PCLK_EN() (RCC->APB2ENR |= (1 << 1))
+#define TIM12_PCLK_EN() (RCC->APB1LENR |= (1 << 6))
+#define TIM13_PCLK_EN() (RCC->APB1LENR |= (1 << 7))
+#define TIM14_PCLK_EN() (RCC->APB1LENR |= (1 << 8))
+#define TIM16_PCLK_EN() (RCC->APB2ENR |= (1 << 17))
+#define TIM15_PCLK_EN() (RCC->APB2ENR |= (1 << 16))
+#define TIM17_PCLK_EN() (RCC->APB2ENR |= (1 << 18))
+#define TIM23_PCLK_EN() (RCC->APB1HENR |= (1 << 24))
+#define TIM24_PCLK_EN() (RCC->APB1HENR |= (1 << 25))
+
+#define TIM1_PCLK_DIS() (RCC->APB2ENR &= ~(1 << 0))
+#define TIM2_PCLK_DIS() (RCC->APB1LENR &= ~(1 << 0))
+#define TIM3_PCLK_DIS() (RCC->APB1LENR &= ~(1 << 1))
+#define TIM4_PCLK_DIS() (RCC->APB1LENR &= ~(1 << 2))
+#define TIM5_PCLK_DIS() (RCC->APB1LENR &= ~(1 << 3))
+#define TIM6_PCLK_DIS() (RCC->APB1LENR &= ~(1 << 4))
+#define TIM7_PCLK_DIS() (RCC->APB1LENR &= ~(1 << 5))
+#define TIM8_PCLK_DIS() (RCC->APB2ENR &= ~(1 << 1))
+#define TIM12_PCLK_DIS() (RCC->APB1LENR &= ~(1 << 6))
+#define TIM13_PCLK_DIS() (RCC->APB1LENR &= ~(1 << 7))
+#define TIM14_PCLK_DIS() (RCC->APB1LENR &= ~(1 << 8))
+#define TIM16_PCLK_DIS() (RCC->APB2ENR &= ~(1 << 17))
+#define TIM15_PCLK_DIS() (RCC->APB2ENR &= ~(1 << 16))
+#define TIM17_PCLK_DIS() (RCC->APB2ENR &= ~(1 << 18))
+#define TIM23_PCLK_DIS() (RCC->APB1HENR &= ~(1 << 24))
+#define TIM24_PCLK_DIS() (RCC->APB1HENR &= ~(1 << 25))
+
+/************** END: Timer register bit definitions ************/
 
 #endif /* STM32H743ZG_PERIPHERALS_H_ */
