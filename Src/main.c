@@ -36,6 +36,8 @@
 #define USER_PBUTTON_PORT GPIOC
 #define USER_PBUTTON_PIN 13
 
+/********* SPI ********/
+
 #define SPI1_GPIO_PORT GPIOA
 #define SPI1_CLOCK_PIN 5
 #define SPI1_NSS_PIN 4
@@ -73,6 +75,22 @@
 #define SPI6_MOSI_PIN 14
 #define SPI6_ALT_FN 5
 
+/*********** END SPI ********/
+
+/********* TIMERS **********/
+
+#define TIMER_16_GPIO_PORT GPIOF
+#define TIMER_16_CH1_PIN 6
+#define TIMER_16_CH1N_PIN 8
+#define TIMER_16_ALT_FN 1
+
+#define TIMER_17_GPIO_PORT GPIOF
+#define TIMER_17_CH1_PIN 7
+#define TIMER_17_CH1N_PIN 9
+#define TIMER_17_ALT_FN 1
+
+/******* END TIMERS ********/
+
 #include <stdint.h>
 #include <string.h>
 
@@ -85,87 +103,46 @@
     "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
-void spi_init(void);
 void program_init(void);
 
 int main(void) {
 
   program_init();
 
-  SPI_peri_clock_control(SPI4, ENABLE);
-  spi_init();
-
-  char user_data[] = "Hello world";
-  int len = strlen(user_data);
-
-  GPIO_write_to_output_pin(GPIOB, 14, 1);
-
-  /* Loop forever */
-  for (;;) {
-    GPIO_toggle_output_pin(LED_GREEN_PORT, LED_GREEN_PIN);
-    SPI_send(SPI4, (uint8_t *)user_data, len);
-    WAIT(SLOW);
-  }
-}
-
-void spi_init(void) {
-
-  // Create GPIO handler and assign shortcuts for easier access
+  GPIO_peri_clock_control(TIMER_16_GPIO_PORT, ENABLE);
   GPIO_Handle_t gpio_handle;
   GPIO_RegDef_t **addr = &gpio_handle.p_GPIO_x;
   GPIO_PinConfig_t *cfg = &gpio_handle.GPIO_pin_config;
 
-  SYSCFG_PCLK_EN();
-
-  // SPI 4 Init
-  *addr = SPI4_GPIO_PORT;
+  *addr = TIMER_16_GPIO_PORT;
+  cfg->GPIO_pin_number = TIMER_16_CH1_PIN;
   cfg->GPIO_pin_mode = GPIO_MODE_ALTFN;
-  cfg->GPIO_pin_speed = GPIO_SPEED_HIGH;
-  cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
-  cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
-  cfg->GPIO_pin_alt_func_mode = SPI4_ALT_FN;
-
-  // PE4 - SPI_4_NSS
-  cfg->GPIO_pin_number = SPI4_NSS_PIN;
+  cfg->GPIO_pin_alt_func_mode = TIMER_16_ALT_FN;
   GPIO_init(&gpio_handle);
 
-  // PE5 - SPI_4_MISO
-  cfg->GPIO_pin_number = SPI4_MISO_PIN;
-  GPIO_init(&gpio_handle);
+  // Start the peripheral clock for timer 16
+  TIM16_PCLK_EN();
 
-  // PE6 - SPI_4_MOSI
-  cfg->GPIO_pin_number = SPI4_MOSI_PIN;
-  GPIO_init(&gpio_handle);
+  // Lastly, enable counter
+  TIM16->CR2 |= TIM_CR1_CEN;
 
-  // PE2 - SPI_4_SCK
-  cfg->GPIO_pin_number = SPI4_CLOCK_PIN;
-  GPIO_init(&gpio_handle);
+  // Enable NVIC interrupt for Timer16
+  NVIC->ISER[IRQ_NO_TIM16 / 32] |= (1 << (IRQ_NO_TIM16 % 32));
 
-  // Config spi
-  SPI_Handle_t spi_handle;
-  SPI_Config_t *spi_cfg = &spi_handle.SPI_config;
-  SPI_RegDef_t **spi_reg = &spi_handle.p_SPI_x;
-
-  *spi_reg = SPI4;
-  spi_cfg->device_mode = SPI_DEVICE_MODE_MASTER;
-  spi_cfg->bus_config = SPI_BUS_CONFIG_FULL_DUPLEX;
-  spi_cfg->cpol = SPI_CPOL_CAPTURE_ACTIVE_HIGH;
-  spi_cfg->cpha = SPI_CPHA_CAPTURE_SECOND_EDGE;
-  spi_cfg->ssm = SPI_SSM_ENABLE;
-  spi_cfg->baud_divisor = SPI_BAUD_DIVISOR_8;
-  spi_cfg->dff = SPI_DFF_8_BIT;
-  SPI_init(&spi_handle);
+  /* Loop forever */
+  for (;;) {
+    // GPIO_toggle_output_pin(LED_GREEN_PORT, LED_GREEN_PIN);
+    WAIT(SLOW);
+  }
 }
 
 void program_init(void) {
+  SYSCFG_PCLK_EN();
+
   // User button PC13
   // LED is on PB0
-  GPIO_peri_clock_control(GPIOA, ENABLE);
-  GPIO_peri_clock_control(GPIOB, ENABLE);
-  GPIO_peri_clock_control(GPIOC, ENABLE);
-  GPIO_peri_clock_control(GPIOE, ENABLE);
-
-  SYSCFG_PCLK_EN();
+  GPIO_peri_clock_control(USER_PBUTTON_PORT, ENABLE);
+  GPIO_peri_clock_control(LED_GREEN_PORT, ENABLE);
 
   // Create GPIO handler and assign shortcuts for easier access
   GPIO_Handle_t gpio_handle;
@@ -182,7 +159,7 @@ void program_init(void) {
   cfg->GPIO_pin_alt_func_mode = 0;
   GPIO_init(&gpio_handle);
   GPIO_irq_interrupt_config(IRQ_NO_EXTI15_10, ENABLE);
-  GPIO_irq_priority_config(IRQ_NO_EXTI15_10, 13);
+  // GPIO_irq_priority_config(IRQ_NO_EXTI15_10, USER_PBUTTON_PIN);
 
   // LED PB0
   *addr = LED_GREEN_PORT;
@@ -197,6 +174,8 @@ void program_init(void) {
   int asdf2 = 0;
   asdf2 = 44;
 }
+
+//void TIM16_IRQHandler(void) {}
 
 void EXTI15_10_IRQHandler(void) {
   if (GPIO_irq_handling(USER_PBUTTON_PIN))
