@@ -123,8 +123,25 @@ int main(void) {
   // Start the peripheral clock for timer 16
   TIM16_PCLK_EN();
 
+  // Set Compare Cpature Register to 60,000
+  TIM16->CCR1 = 0;
+  TIM16->ARR = 60000;
+
+  // Enable CC1 interrupt
+  TIM16->DIER |= (1 << TIM_DIER_CC1IE);
+  TIM16->EGR |= (1 << TIM_EGR_CC1G);
+
+  // Set up as up counting mode
+
+  // Set up timer as output mode
+  TIM16->CCMR1 &= ~(1 << TIM_CCMR1_CC1S);
+  // TIM16->CCER |= (1 << TIM_CCER_CC1E);
+
+  // Set prescalar so osc can follow
+  TIM16->PSC = 512;
+
   // Lastly, enable counter
-  TIM16->CR2 |= TIM_CR1_CEN;
+  TIM16->CR1 |= TIM_CR1_CEN;
 
   // Enable NVIC interrupt for Timer16
   NVIC->ISER[IRQ_NO_TIM16 / 32] |= (1 << (IRQ_NO_TIM16 % 32));
@@ -175,7 +192,17 @@ void program_init(void) {
   asdf2 = 44;
 }
 
-//void TIM16_IRQHandler(void) {}
+void TIM16_IRQHandler(void) {
+  // Clear Timer16 interrupt
+  TIM16->SR &= ~(1 << TIM_SR_CC1IF);
+
+  static int cnt = 0;
+
+  cnt = (cnt + 1) % 5;
+
+  if (!cnt)
+    GPIO_toggle_output_pin(LED_GREEN_PORT, LED_GREEN_PIN);
+}
 
 void EXTI15_10_IRQHandler(void) {
   if (GPIO_irq_handling(USER_PBUTTON_PIN))
