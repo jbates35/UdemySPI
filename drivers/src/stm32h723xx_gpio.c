@@ -120,8 +120,6 @@ void GPIO_init(GPIO_Handle_t *p_GPIO_handle) {
   const uint8_t alt_shift = (cfg->GPIO_pin_number * 4) % 32;
   gpiox->AFR[alt_no] &= ~(0xF << alt_shift);
   gpiox->AFR[alt_no] |= cfg->GPIO_pin_alt_func_mode << alt_shift;
-
-  int a = 5;
 }
 
 /**
