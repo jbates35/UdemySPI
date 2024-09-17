@@ -125,7 +125,7 @@ int main(void) {
 
   // Set Compare Cpature Register to 60,000
   TIM16->CCR1 = 0;
-  TIM16->ARR = 60000;
+  TIM16->ARR = 10000;
 
   // Enable CC1 interrupt
   TIM16->DIER |= (1 << TIM_DIER_CC1IE);
@@ -141,7 +141,7 @@ int main(void) {
   TIM16->PSC = 512;
 
   // Lastly, enable counter
-  TIM16->CR1 |= TIM_CR1_CEN;
+  TIM16->CR1 |= (1 << TIM_CR1_CEN);
 
   // Enable NVIC interrupt for Timer16
   NVIC->ISER[IRQ_NO_TIM16 / 32] |= (1 << (IRQ_NO_TIM16 % 32));
