@@ -1,3 +1,4 @@
+
 /**
  ******************************************************************************
  * @file           : main.c
@@ -166,13 +167,16 @@ int main(void) {
   // Start the peripheral clock for timer 16
   TIM17_PCLK_EN();
 
-  // Set Compare Cpature Register to 60,000
+  // CCR1 in this case is what the PWM relies on to compare to ARR - below ->
+  // HIGH, after -> LOW
   TIM17->CCR1 = 10000;
+
+  // Set ARR - this is what tells the timer to reset to 0
   TIM17->ARR = 40000;
 
   // Enable CC1 interrupt
-  TIM17->DIER |= (1 << TIM_DIER_CC1IE);
-  TIM17->EGR |= (1 << TIM_EGR_CC1G);
+  TIM17->DIER |= (1 << TIM_DIER_CC1IE); // Enables interrupt
+  TIM17->EGR |= (1 << TIM_EGR_CC1G);    // Tells what type of event to generate
 
   // Set up as up counting mode
 
