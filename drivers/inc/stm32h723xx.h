@@ -545,6 +545,94 @@ typedef struct GenTimer_RegDef {
   __vo uint32_t TISEL; // Timer Input Selection Register
 } GenTimer_RegDef_t;
 
+typedef struct ADC_1_2_RegDef {
+  __vo uint32_t ISR;
+  __vo uint32_t IER;
+  __vo uint32_t CR;
+  __vo uint32_t CFGR;
+  __vo uint32_t CFGR2;
+  __vo uint32_t SMPR1;
+  __vo uint32_t SMPR2;
+  __vo uint32_t PCSEL;
+  __vo uint32_t LTR1;
+  __vo uint32_t HTR1;
+  uint32_t RESERVED1[2];
+  __vo uint32_t SQR1;
+  __vo uint32_t SQR2;
+  __vo uint32_t SQR3;
+  __vo uint32_t SQR4;
+  __vo uint32_t DR;
+  uint32_t RESERVED2[2];
+  __vo uint32_t JSQR;
+  __vo uint32_t RESERVED3[4];
+  __vo uint32_t OFR1;
+  __vo uint32_t OFR2;
+  __vo uint32_t OFR3;
+  __vo uint32_t OFR4;
+  uint32_t RESERVED4[4];
+  __vo uint32_t JDR1;
+  __vo uint32_t JDR2;
+  __vo uint32_t JDR3;
+  __vo uint32_t JDR4;
+  uint32_t RESERVED5[4];
+  __vo uint32_t AWD2CR;
+  __vo uint32_t AWD3CR;
+  uint32_t RESERVED6[2];
+  __vo uint32_t LTR2;
+  __vo uint32_t HTR2;
+  __vo uint32_t LTR3;
+  __vo uint32_t HTR3;
+  __vo uint32_t DIFSEL;
+  __vo uint32_t CALFACT;
+  __vo uint32_t CALFACT2;
+  uint32_t RESERVED7[141];
+  __vo uint32_t CSR;
+  uint32_t RESERVED8;
+  __vo uint32_t CCR;
+  __vo uint32_t CDR;
+  __vo uint32_t CDR2;
+} ADC_1_2_RegDef_t;
+
+typedef struct ADC_3_RegDef {
+  __vo uint32_t ISR;
+  __vo uint32_t IER;
+  __vo uint32_t CR;
+  __vo uint32_t CFGR;
+  __vo uint32_t CFGR2;
+  __vo uint32_t SMPR1;
+  __vo uint32_t SMPR2;
+  __vo uint32_t PCSEL;
+  __vo uint32_t TR1;
+  __vo uint32_t TR2;
+  __vo uint32_t TR3;
+  uint32_t RESERVED1;
+  __vo uint32_t SQR1;
+  __vo uint32_t SQR2;
+  __vo uint32_t SQR3;
+  __vo uint32_t SQR4;
+  __vo uint32_t DR;
+  uint32_t RESERVED2[2];
+  __vo uint32_t JSQR;
+  uint32_t RESERVED3[4];
+  __vo uint32_t OFR1;
+  __vo uint32_t OFR2;
+  __vo uint32_t OFR3;
+  __vo uint32_t OFR4;
+  __vo uint32_t RESERVED4[4];
+  __vo uint32_t JDR1;
+  __vo uint32_t JDR2;
+  __vo uint32_t JDR3;
+  __vo uint32_t JDR4;
+  uint32_t RESERVED5[4];
+  __vo uint32_t AWD2CR;
+  __vo uint32_t AWD3CR;
+  uint32_t RESERVED6[2];
+  __vo uint32_t DIFSEL;
+  __vo uint32_t CALFACT;
+  uint32_t RESERVED7[148];
+  __vo uint32_t CCR;
+} ADC_3_RegDef_t;
+
 //
 // Actual Pointer Notation with base addresses:
 #define RCC ((RCC_RegDef_t *)RCC_BASEADDR)
@@ -1076,5 +1164,9 @@ typedef enum {
 } TIM_TISEL_BIT; // Timer Input Selection Register
 
 /************** END: Timer register bit definitions ************/
+
+/************** START: ADC register bit definitions ************/
+
+/************** END: ADC register bit definitions ************/
 
 #endif /* STM32H743ZG_PERIPHERALS_H_ */
