@@ -1167,6 +1167,15 @@ typedef enum {
 
 /************** START: ADC register bit definitions ************/
 
+#define ADC1_ADC2_PCLK_EN() (RCC->AHB1ENR |= (1 << 5))
+#define ADC3_PCLK_EN() (RCC->AHB4ENR |= (1 << 24))
+
+#define ADC1_ADC2_PCLK_DIS() (RCC->AHB1ENR &= ~(1 << 5))
+#define ADC3_PCLK_DIS() (RCC->AHB4ENR &= ~(1 << 24))
+
+#define ADC1_ADC2 ((ADC_1_2_RegDef_t *)ADC1_ADC2_BASEADDR)
+#define ADC3 ((ADC_3_RegDef_t *)ADC3_BASEADDR)
+
 typedef enum {
   ADC_ISR_ADRDY = 0,
   ADC_ISR_EOSMP,
