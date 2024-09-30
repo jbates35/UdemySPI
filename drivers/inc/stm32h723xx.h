@@ -1321,29 +1321,29 @@ typedef enum { ADC_TR2_LT2 = 0, ADC_TR2_HT2 = 16 } ADC_TR2_BIT;
 typedef enum { ADC_TR3_LT3 = 0, ADC_TR3_HT3 = 16 } ADC_TR3_BIT;
 
 typedef enum {
-  ADC_SQ1_L = 0,
-  ADC_SQ1_SQ1 = 6,
-  ADC_SQ1_SQ2 = 12,
-  ADC_SQ1_SQ3 = 18,
-  ADC_SQ1_SQ4 = 24
+  ADC_SQR1_L = 0,
+  ADC_SQR1_SQ1 = 6,
+  ADC_SQR1_SQ2 = 12,
+  ADC_SQR1_SQ3 = 18,
+  ADC_SQR1_SQ4 = 24
 } ADC_SQR1_BIT;
 typedef enum {
-  ADC_SQ2_SQ5 = 0,
-  ADC_SQ2_SQ6 = 6,
-  ADC_SQ2_SQ7 = 12,
-  ADC_SQ2_SQ8 = 18,
-  ADC_SQ2_SQ9 = 24
+  ADC_SQR2_SQ5 = 0,
+  ADC_SQR2_SQ6 = 6,
+  ADC_SQR2_SQ7 = 12,
+  ADC_SQR2_SQ8 = 18,
+  ADC_SQR2_SQ9 = 24
 } ADC_SQR2_BIT;
 
 typedef enum {
-  ADC_SQ3_SQ10 = 0,
-  ADC_SQ3_SQ11 = 6,
-  ADC_SQ3_SQ12 = 12,
-  ADC_SQ3_SQ13 = 18,
-  ADC_SQ3_SQ14 = 24
+  ADC_SQR3_SQ10 = 0,
+  ADC_SQR3_SQ11 = 6,
+  ADC_SQR3_SQ12 = 12,
+  ADC_SQR3_SQ13 = 18,
+  ADC_SQR3_SQ14 = 24
 } ADC_SQR3_BIT;
 
-typedef enum { ADC_SQ4_SQ15 = 18, ADC_SQ4_SQ16 = 24 } ADC_SQR4_BIT;
+typedef enum { ADC_SQR4_SQ15 = 18, ADC_SQR4_SQ16 = 24 } ADC_SQR4_BIT;
 
 typedef enum { ADC_DR = 0 } ADC_DR_BIT;
 
