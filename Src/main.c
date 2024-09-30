@@ -91,6 +91,15 @@
 
 /******* END TIMERS ********/
 
+/******* START ANALOG PINS *********/
+
+#define ANALOG_1_ADDR GPIOA
+#define ANALOG_1_PIN 3
+#define ANALOG_2_ADDR GPIOC
+#define ANALOG_2_PIN 0
+
+/******* END ANALOG PINS *********/
+
 #include <stdint.h>
 #include <string.h>
 
@@ -103,101 +112,42 @@
     "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
-void program_init(void);
+void basic_gpio_init(void);
 
 int main(void) {
 
-  program_init();
-
-  GPIO_peri_clock_control(TIMER_16_GPIO_PORT, ENABLE);
-  GPIO_peri_clock_control(TIMER_17_GPIO_PORT, ENABLE);
+  basic_gpio_init();
 
   GPIO_Handle_t gpio_handle;
   GPIO_RegDef_t **addr = &gpio_handle.p_GPIO_x;
   GPIO_PinConfig_t *cfg = &gpio_handle.GPIO_pin_config;
 
-  // *addr = TIMER_16_GPIO_PORT;
-  *addr = TIMER_16_GPIO_PORT;
-  cfg->GPIO_pin_number = TIMER_16_CH1_PIN;
-  cfg->GPIO_pin_mode = GPIO_MODE_ALTFN;
-  cfg->GPIO_pin_alt_func_mode = TIMER_16_ALT_FN;
-  cfg->GPIO_pin_speed = GPIO_SPEED_HIGH;
-  cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
-  cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
-  GPIO_init(&gpio_handle);
+  // Set the ADC clock
+  ADC3_PCLK_EN();
 
-  *addr = TIMER_17_GPIO_PORT;
-  cfg->GPIO_pin_number = TIMER_17_CH1_PIN;
-  cfg->GPIO_pin_mode = GPIO_MODE_ALTFN;
-  cfg->GPIO_pin_alt_func_mode = TIMER_17_ALT_FN;
-  cfg->GPIO_pin_speed = GPIO_SPEED_HIGH;
-  cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
-  cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
-  GPIO_init(&gpio_handle);
+  // Enable only two channels in a sequence (I think?)
+  ADC3->SQR1 &= ~(0xF << ADC_SQR1_L);
+  ADC3->SQR1 |= (0x1 << ADC_SQR1_L);
 
-  // Start the peripheral clock for timer 16
-  TIM16_PCLK_EN();
+  // Set channel 1's ... channel
+  ADC3->SQR1 &= ~(0xF << ADC_SQR1_SQ1);
+  ADC3->SQR1 |= (0x0 << ADC_SQR1_SQ1);
 
-  // Set Compare Cpature Register to 60,000
-  TIM16->CCR1 = 0;
-  TIM16->ARR = 40000;
+  // Set channel 2's ... channel
+  ADC3->SQR1 &= ~(0xF << ADC_SQR1_SQ2);
+  ADC3->SQR1 |= (0x0 << ADC_SQR1_SQ2);
 
-  // Enable CC1 interrupt
-  TIM16->DIER |= (1 << TIM_DIER_CC1IE);
-  TIM16->EGR |= (1 << TIM_EGR_CC1G);
-
-  // Set up as up counting mode
-
-  // Set up timer as output mode
-  TIM16->CCMR1 &= ~(1 << TIM_CCMR1_CC1S);
-  TIM16->CCER |= (1 << TIM_CCER_CC1E);
-
-  TIM16->CCMR1 |= (0b11 << TIM_CCMR1_OC1M);
-
-  // Set prescalar so osc can follow
-  TIM16->PSC = 1;
-
-  // Lastly, enable counter
-  TIM16->CR1 |= (1 << TIM_CR1_CEN);
-
-  // Enable NVIC interrupt for Timer16
-  NVIC->ISER[IRQ_NO_TIM16 / 32] |= (1 << (IRQ_NO_TIM16 % 32));
-
-  // Start the peripheral clock for timer 16
-  TIM17_PCLK_EN();
-
-  // Set Compare Cpature Register to 60,000
-  TIM17->CCR1 = 10000;
-  TIM17->ARR = 40000;
-
-  // Enable CC1 interrupt
-  TIM17->DIER |= (1 << TIM_DIER_CC1IE);
-  TIM17->EGR |= (1 << TIM_EGR_CC1G);
-
-  // Set up as up counting mode
-
-  // Set up timer as output mode
-  TIM17->CCMR1 &= ~(0b11 << TIM_CCMR1_CC1S);
-
-  // Enable PWM - ALL THESE BITS MATTER
-  TIM17->BDTR |= (1 << TIM_BDTR_MOE);
-  TIM17->CCMR1 |= (0b110 << TIM_CCMR1_OC1M);
-  TIM17->CCER |= (1 << TIM_CCER_CC1E);
-
-  // Set prescalar so osc can follow
-  TIM17->PSC = 32;
-
-  // Lastly, enable counter
-  TIM17->CR1 |= (1 << TIM_CR1_CEN);
+  // Enable the ADC peripheral
+  ADC3->CR |= (1 << ADC_CR_ADEN);
 
   /* Loop forever */
   for (;;) {
     // GPIO_toggle_output_pin(LED_GREEN_PORT, LED_GREEN_PIN);
-    WAIT(SLOW);
+    WAIT(FAST);
   }
 }
 
-void program_init(void) {
+void basic_gpio_init(void) {
   SYSCFG_PCLK_EN();
 
   // User button PC13
@@ -239,11 +189,6 @@ void program_init(void) {
 void TIM16_IRQHandler(void) {
   // Clear Timer16 interrupt
   TIM16->SR &= ~(1 << TIM_SR_CC1IF);
-
-  TIM17->CCR1 = (TIM17->CCR1 + 10) % 40000;
-
-  if (TIM17->CCR1 == 0)
-    GPIO_toggle_output_pin(LED_GREEN_PORT, LED_GREEN_PIN);
 }
 
 void EXTI15_10_IRQHandler(void) {
