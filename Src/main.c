@@ -93,10 +93,15 @@
 
 /******* START ANALOG PINS *********/
 
-#define ANALOG_1_ADDR GPIOA
-#define ANALOG_1_PIN 3
-#define ANALOG_2_ADDR GPIOC
-#define ANALOG_2_PIN 0
+#define ANALOG_1_CLK() GPIOF_PCLK_EN()
+#define ANALOG_1_ADDR GPIOF
+#define ANALOG_1_PIN 5
+#define ANALOG_1_CH 4
+
+#define ANALOG_2_CLK() GPIOF_PCLK_EN()
+#define ANALOG_2_ADDR GPIOF
+#define ANALOG_2_PIN 3
+#define ANALOG_2_CH 5
 
 /******* END ANALOG PINS *********/
 
@@ -122,26 +127,118 @@ int main(void) {
   GPIO_RegDef_t **addr = &gpio_handle.p_GPIO_x;
   GPIO_PinConfig_t *cfg = &gpio_handle.GPIO_pin_config;
 
+  ANALOG_1_CLK();
+  *addr = ANALOG_1_ADDR;
+  cfg->GPIO_pin_number = ANALOG_1_PIN;
+  cfg->GPIO_pin_mode = GPIO_MODE_ANALOG;
+  cfg->GPIO_pin_speed = GPIO_SPEED_HIGH;
+  cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
+  cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
+  cfg->GPIO_pin_alt_func_mode = 0;
+  GPIO_init(&gpio_handle);
+
+  ANALOG_2_CLK();
+  *addr = ANALOG_2_ADDR;
+  cfg->GPIO_pin_number = ANALOG_2_PIN;
+  cfg->GPIO_pin_mode = GPIO_MODE_ANALOG;
+  cfg->GPIO_pin_speed = GPIO_SPEED_HIGH;
+  cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PUSHPULL;
+  cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
+  cfg->GPIO_pin_alt_func_mode = 0;
+  GPIO_init(&gpio_handle);
+
   // Set the ADC clock
   ADC3_PCLK_EN();
+  RCC->D3AMR |= (1 << 24);
+
+  // Disable ADC to start
+  // ADC3->CR |= (1 << ADC_CR_ADDIS);
+
+  // Exit deep powerdown state
+  ADC3->CR &= ~(1 << ADC_CR_DEEPPWD);
+
+  /*Then, it is mandatory to enable the ADC internal voltage regulator by
+setting the bit ADVREGEN = 1 into ADC_CR register. The software must wait for
+the startup time of the ADC voltage regulator (TADCVREG_STUP) before laun*/
+  ADC3->CR |= (1 << ADC_CR_ADVREGEN);
+  WAIT(SLOW);
+
+  // Set ADC in continuous mode
+  // ADC3->CFGR |= (1 << ADC_CFGR_CONT);
+
+  // Set Data resolution to 10 bit (0 -> 1024)
+  ADC3->CFGR &= ~(0x3 << ADC_CFGR_RES);
+  ADC3->CFGR |= (0x1 << ADC_CFGR_RES);
 
   // Enable only two channels in a sequence (I think?)
   ADC3->SQR1 &= ~(0xF << ADC_SQR1_L);
-  ADC3->SQR1 |= (0x1 << ADC_SQR1_L);
+  ADC3->SQR1 |= (0x0 << ADC_SQR1_L);
 
   // Set channel 1's ... channel
   ADC3->SQR1 &= ~(0xF << ADC_SQR1_SQ1);
-  ADC3->SQR1 |= (0x0 << ADC_SQR1_SQ1);
+  ADC3->SQR1 |= (0x4 << ADC_SQR1_SQ1);
+
+  // Set sample time for channel 1
+  ADC3->SMPR1 &= ~(0x7 << ADC_SMPR1_SMP0);
+  ADC3->SMPR1 |= (0x7 << ADC_SMPR1_SMP0);
 
   // Set channel 2's ... channel
   ADC3->SQR1 &= ~(0xF << ADC_SQR1_SQ2);
-  ADC3->SQR1 |= (0x0 << ADC_SQR1_SQ2);
+  ADC3->SQR1 |= (0x5 << ADC_SQR1_SQ2);
 
-  // Enable the ADC peripheral
+  // Set sample time for channel 1
+  ADC3->SMPR1 &= ~(0x7 << ADC_SMPR1_SMP1);
+  ADC3->SMPR1 |= (0x7 << ADC_SMPR1_SMP1);
+
+  // Need to set in non differential mode I think
+  ADC3->DIFSEL = 0;
+
+  // 1. Clear the ADRDY bit in the ADC_ISR register by writing ‘1’.
+  // ADC3->ISR |= (1 << ADC_ISR_ADRDY);
+
+  // 2.Set ADEN = 1.
+  // ADC3->CR &= ~(1 << ADC_CR_ADDIS);
   ADC3->CR |= (1 << ADC_CR_ADEN);
+
+  // 3.Wait until ADRDY = 1 (ADRDY is set after the ADC startup time). This can
+  // be done using the associated interrupt (setting ADRDYIE = 1).
+  ADC3->IER |= (1 << ADC_IER_ADRDY_IE);
+
+  // 4.Clear the ADRDY bit in the ADC_ISR register by writing ‘1’ (optional).
+  // ADEN bit cannot be set when ADCAL is set and during four ADC clock cycle
+  // Enable the ADC peripheral
+  // ADC3->ISR |= (1 << ADC_ISR_ADRDY);
+
+  /** LOOK INTO DMA FOR ACCESSING CONVERTED DATA MORE EASILY **/
 
   /* Loop forever */
   for (;;) {
+    // Wait for ADC to be ready
+    // while (!(ADC3->ISR & (1 << ADC_ISR_ADRDY)))
+    ;
+
+    // Start conversion
+    ADC3->CR |= (1 << ADC_CR_ADSTART);
+
+    // Wait for end of conversion
+    while (!(ADC3->ISR & (1 << ADC_ISR_EOC)))
+      ;
+
+    // Access data register
+    uint32_t data[2];
+
+    data[0] = ADC3->DR;
+
+    int asdf = 0;
+
+    data[1] = ADC3->DR;
+
+    asdf = 1;
+
+    while (!(ADC3->ISR & (1 << ADC_ISR_ADRDY)))
+      ;
+
+    asdf = 1;
     // GPIO_toggle_output_pin(LED_GREEN_PORT, LED_GREEN_PIN);
     WAIT(FAST);
   }
